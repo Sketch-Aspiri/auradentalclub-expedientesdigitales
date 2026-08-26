@@ -1,0 +1,44 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/hooks/validate-bash.sh",
+            "statusMessage": "Validando comando contra patrones destructivos..."
+          }
+        ]
+      }
+    ]
+  },
+  "permissions": {
+    "allow": [
+      "Bash(git status)",
+      "Bash(git status *)",
+      "Bash(git diff)",
+      "Bash(git diff *)",
+      "Bash(git log)",
+      "Bash(git log *)",
+      "Bash(git show *)",
+      "Bash(php artisan test)",
+      "Bash(php artisan test *)",
+      "Bash(php artisan route:list)",
+      "Bash(php artisan route:list *)",
+      "Bash(php artisan about)",
+      "Bash(php artisan migrate:status)",
+      "Bash(composer install)",
+      "Bash(composer install *)",
+      "Bash(composer validate)",
+      "Bash(composer validate *)",
+      "Bash(vendor/bin/pint --test)",
+      "Bash(vendor/bin/phpstan analyse)",
+      "Bash(vendor/bin/phpstan analyse *)",
+      "Bash(vendor/bin/psalm)",
+      "Bash(vendor/bin/psalm *)",
+      "Bash(npm run build)",
+      "Bash(npm run build *)"
+    ]
+  }
+}
