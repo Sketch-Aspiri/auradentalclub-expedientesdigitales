@@ -12,6 +12,68 @@ No se avanza al siguiente sprint con dependencias sin resolver, salvo que se doc
 4. Antes de marcar un sprint como `Completado`, revisa su sección **Criterios de aceptación** y **Testing requerido**.
 5. Los sprints 8 (auditoría/seguridad) y 9 (deploy) no son "features" — son gates de calidad/seguridad que se corren real, no se saltan por prisa.
 
+## Cómo correr el proyecto en local
+
+Guía para levantar el sistema en tu máquina y probarlo en el navegador. Asume Laravel Herd (PHP 8.4) y Docker Desktop ya instalados.
+
+### 1. Primera vez (setup)
+
+```powershell
+# Dependencias PHP y JS
+composer install
+npm install
+
+# Variables de entorno (.env ya está commiteado para este entorno local de desarrollo —
+# si no existiera, copia .env.example y ajusta APP_KEY con `php artisan key:generate`)
+
+# Base de datos MySQL vía Docker (contenedor aura_dental_club_mysql, puerto host 3307)
+docker compose up -d
+
+# Migraciones + datos de prueba (3 usuarios, uno por rol, password "password")
+php artisan migrate
+php artisan db:seed
+```
+
+> **Nota Windows:** si usas Git Bash y `php`/`composer` no se reconocen (`command not found`), corre estos comandos desde **PowerShell** — en este entorno Herd solo registra el PATH de PHP ahí.
+
+### 2. Correr la app día a día
+
+Necesitas dos procesos corriendo en paralelo:
+
+```powershell
+# Terminal 1 — servidor Laravel
+php artisan serve --no-reload
+# → http://127.0.0.1:8000
+
+# Terminal 2 — Vite (compila Tailwind/JS en caliente)
+npm run dev
+```
+
+Si el contenedor de MySQL no está levantado (`docker ps` no lo muestra), primero `docker compose up -d`.
+
+Abre `http://127.0.0.1:8000` — redirige a `/login`. Usuarios de prueba (seeder `DatabaseSeeder`, password `password` para los tres):
+
+| Rol | Email |
+|---|---|
+| Superadmin | `superadmin@auradentalclub.test` |
+| Administrador | `administrador@auradentalclub.test` |
+| Doctor | `doctor@auradentalclub.test` |
+
+### 3. Correr los tests
+
+```powershell
+php artisan test
+```
+
+Usa la base `aura_dental_testing` (creada automáticamente por `docker/mysql/init/01-testing-database.sql` al levantar el contenedor por primera vez) — ver `.env.testing`. Nunca corre contra la base de desarrollo.
+
+### 4. Problemas comunes
+
+- **`Failed to listen on 127.0.0.1:8000` (y sigue reintentando 8001, 8002... hasta fallar en los 10):** en Windows, `php artisan serve` intenta respetar `PHP_CLI_SERVER_WORKERS` (definido en `.env`) creando varios procesos worker, pero el *forking* no está soportado en Windows y el bind falla en cascada. Solución: siempre usa `php artisan serve --no-reload` (fuerza un solo proceso) — ya reflejado en el paso 2 de esta guía.
+- **`SQLSTATE[HY000] [2002]` o error de conexión a MySQL:** el contenedor no está levantado o no terminó su healthcheck — `docker compose up -d` y espera unos segundos (`docker ps`, columna `STATUS` debe decir `healthy`).
+- **Estilos de Tailwind no cargan / la página se ve sin diseño:** falta `npm run dev` corriendo, o falta compilar con `npm run build` para una vista rápida sin hot-reload.
+- **`Vite manifest not found`:** corre `npm run build` (o mantén `npm run dev` activo mientras navegas).
+
 ## Roadmap
 
 | # | Sprint | Depende de | Estado |
