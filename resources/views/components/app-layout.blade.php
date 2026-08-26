@@ -21,6 +21,11 @@
                         Inicio
                     </a>
 
+                    <a href="{{ route('patients.index') }}"
+                       class="block rounded px-3 py-2 {{ request()->routeIs('patients.*') ? 'bg-aura-olive text-white' : 'text-aura-gray-dark hover:bg-aura-cream' }}">
+                        Pacientes
+                    </a>
+
                     @if (auth()->user()?->isSuperadmin())
                         <a href="#" class="block rounded px-3 py-2 text-aura-sage cursor-not-allowed" aria-disabled="true">
                             Configuración del sistema

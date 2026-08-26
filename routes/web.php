@@ -8,4 +8,6 @@ require __DIR__.'/auth.php';
 
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', App\Http\Controllers\DashboardController::class)->name('dashboard');
+
+    Route::resource('patients', App\Http\Controllers\PatientController::class);
 });

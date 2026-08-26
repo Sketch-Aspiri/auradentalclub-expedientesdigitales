@@ -1,6 +1,6 @@
 # Sprint 1 — Pacientes (ficha de identificación)
 
-**Estado:** No iniciado
+**Estado:** Completado
 **Depende de:** Sprint 0
 
 ## Objetivo
@@ -12,36 +12,43 @@ Alta, edición, búsqueda y filtros de pacientes — la ficha de identificación
 - CRUD de `patients`: `full_name`, `birth_date`, `sex`, `occupation`, `marital_status`, `address`, `phone`, `email`, `emergency_contact_name`, `emergency_contact_phone`.
 - `age` calculado desde `birth_date` (accessor de Eloquent), no almacenado.
 - Búsqueda y filtros de expedientes (por nombre, teléfono, al menos).
-- Autorización por rol: quién puede crear/editar/eliminar/ver pacientes (`CLAUDE.md` §3 — confirmar con el usuario/cliente si hay dudas sobre si `doctor` puede crear pacientes o solo `administrador`/`superadmin`).
+- Autorización por rol: quién puede crear/editar/eliminar/ver pacientes (`CLAUDE.md` §3 — `doctor` puede crear pacientes tambien `administrador`/`superadmin`).
 
 ## Tareas
 
-- [ ] Migración `patients` según el esquema de `CLAUDE.md` §6.
-- [ ] Modelo `Patient` con `$fillable`, casts apropiados, accessor `age`.
-- [ ] `PatientPolicy` cubriendo los tres roles explícitamente.
-- [ ] `StorePatientRequest` / `UpdatePatientRequest` (Form Requests) con validación completa.
-- [ ] Controlador de recurso (`PatientController`) o componente Livewire equivalente, con `$this->authorize(...)` en cada acción.
-- [ ] Vista de listado con búsqueda/filtro (paginado — sin cargar todos los pacientes de golpe, ver `.claude/rules/api-conventios.md`).
-- [ ] Vista de alta/edición siguiendo la identidad visual (`CLAUDE.md` §7).
-- [ ] Conectar el mecanismo de `audit_logs` del Sprint 0: cada `viewed`/`created`/`updated`/`deleted` sobre un paciente queda registrado.
-- [ ] Factory de `Patient` con datos mexicanos realistas (`.claude/rules/testing.md`).
+- [x] Migración `patients` según el esquema de `CLAUDE.md` §6 — incluye `soft_deletes` (decisión propia: retención de expediente en vez de borrado físico, ver nota abajo) e índices en `full_name`/`phone`.
+- [x] Modelo `Patient` con `$fillable`, casts apropiados, accessor `age` (vía `Attribute::make`), trait `Auditable` conectado (`auditPatientId()` devuelve su propio id).
+- [x] `PatientPolicy` cubriendo los tres roles explícitamente — decisión confirmada con el usuario: `doctor`/`administrador`/`superadmin` tienen el mismo acceso CRUD completo sobre la ficha; `forceDelete` (borrado permanente) restringido a `superadmin`.
+- [x] `StorePatientRequest` / `UpdatePatientRequest` con validación completa; reglas compartidas extraídas a `App\Http\Requests\Concerns\ValidatesPatientData` (evita duplicación).
+- [x] `PatientController` (resource controller) con `$this->authorize(...)` explícito en cada acción.
+- [x] Vista de listado con búsqueda (nombre/teléfono) y paginación (`paginate(15)`).
+- [x] Vistas de alta/edición/ficha siguiendo la identidad visual (`CLAUDE.md` §7, tokens `aura-*`).
+- [x] `audit_logs` conectado: `created`/`updated`/`deleted` automáticos vía trait, `viewed` explícito en `PatientController@show`.
+- [x] Factory de `Patient` con datos mexicanos (Faker `es_MX`, formato de teléfono `55########`).
 
 ## Criterios de aceptación
 
-- [ ] Un `administrador`/`superadmin` puede crear, editar, buscar y (si aplica) eliminar pacientes.
-- [ ] Un `doctor` tiene el acceso que se haya confirmado con el cliente — no una suposición sin confirmar (`CLAUDE.md` §3, §13).
-- [ ] Cada acción sobre un paciente genera su registro en `audit_logs`.
-- [ ] No hay ninguna ruta de pacientes sin `Policy` explícita.
+- [x] Un `administrador`/`superadmin` puede crear, editar, buscar y eliminar (soft delete) pacientes.
+- [x] Un `doctor` tiene el mismo acceso CRUD que `administrador`/`superadmin` sobre la ficha de identificación — confirmado explícitamente con el usuario en sesión de desarrollo (no fue una suposición), ver `CLAUDE.md` §3/§13.
+- [x] Cada acción sobre un paciente genera su registro en `audit_logs`.
+- [x] No hay ninguna ruta de pacientes sin `Policy` explícita.
 
 ## Testing requerido
 
-- Form Request: casos válidos e inválidos por campo relevante (fechas, teléfono, email).
-- Policy: los tres roles, explícitamente, para cada acción (view/create/update/delete).
-- Feature test: flujo completo de alta de paciente de punta a punta.
-- Verifica que `audit_logs` recibe un registro al crear/editar/ver un paciente.
+- [x] Form Request: casos válidos e inválidos por campo relevante (fechas, teléfono, email, sexo) — `StorePatientRequestTest`, `UpdatePatientRequestTest`.
+- [x] Policy: los tres roles, explícitamente, para cada acción (view/create/update/delete), más `forceDelete` a nivel de Gate — `PatientPolicyTest`.
+- [x] Feature test: flujo completo alta → ver → editar → eliminar de punta a punta — `PatientCrudTest`.
+- [x] Verifica que `audit_logs` recibe un registro al crear/ver/editar/eliminar un paciente.
+
+## Notas de decisiones tomadas en esta sesión
+
+- **Soft delete:** se implementó `SoftDeletes` en `patients` (no borrado físico) como buena práctica estándar para retención de expediente clínico. No fue confirmado explícitamente con el cliente — revisar si aplica normativamente (NOM) antes de producción.
+- **Acceso del rol `doctor`:** confirmado con el usuario en sesión — CRUD completo, igual que `administrador`/`superadmin`.
 
 ## Registro de ejecución
 
 | Fecha | Qué se hizo | Comando/agente usado | Resultado |
 |---|---|---|---|
-| | | | |
+| 2026-08-26 | Migración, modelo, factory, policy, form requests, controlador resource, rutas y vistas (index/create/edit/show) del módulo de pacientes | Implementación directa | 26 tests iniciales en verde |
+| 2026-08-26 | Revisión obligatoria de código (agente `code-reviewer`) — 0 críticos, 1 ALTO (falta test de `forceDelete` por rol) y 1 MEDIO (falta `UpdatePatientRequestTest`) | Agente `code-reviewer` | Ambos hallazgos corregidos; también se eliminó duplicación de reglas de validación (DRY) |
+| 2026-08-26 | Suite completa re-ejecutada tras las correcciones | `php artisan test` | 48 tests, 112 assertions, todo en verde |
