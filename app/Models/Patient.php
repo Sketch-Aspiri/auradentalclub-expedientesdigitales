@@ -7,6 +7,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Patient extends Model
@@ -44,5 +45,10 @@ class Patient extends Model
     protected function auditPatientId(): ?int
     {
         return $this->getKey();
+    }
+
+    public function medicalHistory(): HasOne
+    {
+        return $this->hasOne(MedicalHistory::class);
     }
 }

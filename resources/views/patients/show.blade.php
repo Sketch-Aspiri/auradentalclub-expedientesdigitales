@@ -7,6 +7,12 @@
             </div>
 
             <div class="flex items-center gap-3 text-sm">
+                @can('viewAny', App\Models\MedicalHistory::class)
+                    <a href="{{ route('patients.medical-history.edit', $patient) }}" class="text-aura-olive hover:underline">
+                        Historia clínica
+                    </a>
+                @endcan
+
                 @can('update', $patient)
                     <a href="{{ route('patients.edit', $patient) }}" class="text-aura-olive hover:underline">
                         Editar
