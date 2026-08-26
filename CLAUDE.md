@@ -131,12 +131,12 @@ Basado en el manual de marca de Aura (Brand Strategy Summary, elaborado por Good
 |---|---|---|
 | Blanco hueso | `#F3F3F0` | Fondo principal |
 | Gris claro | `#D2D2D1` | Fondos secundarios, bordes, separadores |
-| Verde oliva | `#7E8C54` | Color de acento de marca (botones primarios, enlaces activos, elementos destacados) |
+| Verde oliva | `#3E5419` | Color de acento de marca (botones primarios, enlaces activos, elementos destacados) |
 | Gris sage | `#AEB0AC` | Acento secundario / neutro intermedio |
 | Gris medio | `#6E6E6D` | Texto secundario |
 | Gris oscuro | `#515150` | Texto principal, encabezados |
 
-Nota: el verde oliva (`#7E8C54`) **no aparece en la paleta neutra del manual de marca** — fue proporcionado directamente por el cliente como el color de acento real de la marca. Los demás tonos sí vienen del manual oficial. Toda la paleta es de tonos neutros/apagados — evita introducir colores saturados o brillantes que no encajen con esta identidad minimalista.
+Nota: el verde oliva **no aparece en la paleta neutra del manual de marca** — el tono base (`#7E8C54`) fue proporcionado directamente por el cliente como el color de acento real de la marca. Durante la implementación se iteró en sesión de desarrollo (`#5C6E3F` más verde/menos dorado, luego brevemente un verde neón `#9BF705` que se descartó por no encajar con la estética) hasta llegar al valor actual `#3E5419`, un verde oliva oscuro y apagado que sí respeta la identidad neutra. Los demás tonos sí vienen del manual oficial. Toda la paleta es de tonos neutros/apagados — evita introducir colores saturados o brillantes que no encajen con esta identidad minimalista. Confirmar con el cliente si se retoma el manual de marca formalmente.
 
 **Personalidad y tono de marca:**
 - Arquetipo: Sabio — experto, confiable, informativo.
@@ -147,7 +147,7 @@ Nota: el verde oliva (`#7E8C54`) **no aparece en la paleta neutra del manual de 
 **Implicaciones para el diseño del sistema:**
 - UI minimalista, con espacio en blanco generoso, sin elementos decorativos innecesarios.
 - Usa la paleta de la tabla anterior como base del `tailwind.config.js` (ej. `aura-cream`, `aura-gray-light`, `aura-olive`, `aura-sage`, `aura-gray`, `aura-gray-dark`) en vez de hex codes sueltos en las vistas.
-- El verde oliva (`#7E8C54`) es el acento principal — úsalo para botones primarios, estados activos y elementos de llamada a la acción, no como color de fondo extenso.
+- El verde oliva (`#3E5419`) es el acento principal — úsalo para botones primarios, estados activos y elementos de llamada a la acción, no como color de fondo extenso.
 - Estados funcionales de la interfaz (éxito, error, advertencia) pueden requerir colores fuera de la paleta de marca (verde/rojo/ámbar estándar de UI) — está bien usarlos ahí, ya que son convenciones de usabilidad y no de identidad visual.
 
 ## 8. Convenciones de código
