@@ -5,7 +5,7 @@ argument-hint: [ruta(s) o módulo | vacío = diff local sin commitear]
 
 # /review — Code Review · Expedientes Digitales Aura Dental Club
 
-> Comando personalizado para este proyecto (Laravel 11 + Livewire + MySQL, expediente clínico bajo NOM-004/NOM-015/NOM-013). Combina las prioridades de los agentes `php-reviewer`, `security-reviewer`/`healthcare-reviewer` y `database-reviewer`, y las skills `laravel-security` y `laravel-verification`, adaptadas a MySQL y al esquema de este repositorio. Ante cualquier duda, `CLAUDE.md` (raíz) y `.claude/rules/code-style.md` / `.claude/rules/testing.md` son la referencia autoritativa.
+> Comando personalizado para este proyecto (Laravel 12 + Livewire + MySQL, expediente clínico bajo NOM-004/NOM-015/NOM-013). Combina las prioridades de los agentes `php-reviewer`, `security-reviewer`/`healthcare-reviewer` y `database-reviewer`, y las skills `laravel-security` y `laravel-verification`, adaptadas a MySQL y al esquema de este repositorio. Ante cualquier duda, `CLAUDE.md` (raíz) y `.claude/rules/code-style.md` / `.claude/rules/testing.md` son la referencia autoritativa.
 
 **Entrada**: $ARGUMENTS
 

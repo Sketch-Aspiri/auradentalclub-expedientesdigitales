@@ -16,7 +16,7 @@ No se avanza al siguiente sprint con dependencias sin resolver, salvo que se doc
 
 | # | Sprint | Depende de | Estado |
 |---|--------|-----------|--------|
-| 0 | [Fundación del proyecto](sprint-00-fundacion.md) | — | No iniciado |
+| 0 | [Fundación del proyecto](sprint-00-fundacion.md) | — | Completado |
 | 1 | [Pacientes (ficha de identificación)](sprint-01-pacientes.md) | 0 | No iniciado |
 | 2 | [Historia clínica / anamnesis](sprint-02-historia-clinica.md) | 1 | No iniciado |
 | 3 | [Consultas](sprint-03-consultas.md) | 1, 2 | No iniciado |
@@ -31,7 +31,7 @@ Estados válidos: `No iniciado` · `En progreso` · `Bloqueado` · `Completado`.
 
 ## Notas de orden
 
-- **Sprint 0 es obligatorio primero**: hoy el repo no tiene ni `composer.json` — no existe proyecto Laravel todavía, solo la configuración de `.claude/` y `CLAUDE.md`.
+- **Sprint 0 completado** (2026-08-26): proyecto Laravel 12 + PHP 8.4 corriendo, auth a medida, roles, Tailwind con paleta de marca, `audit_logs` con trait `Auditable`, Pest en verde. Ya se puede empezar el Sprint 1.
 - **4 (Odontograma)** solo depende de Pacientes, no de Historia clínica/Consultas — puede adelantarse en paralelo a 2/3 si conviene.
 - **7 (Archivos)** puede empezar en paralelo a 3 una vez que 1 esté listo, ya que `patient_files.consultation_id` es nullable (`CLAUDE.md` §6).
 - **8 y 9 nunca se saltan** — son los gates de "esto toca datos clínicos reales" antes de que la clínica use el sistema en producción.

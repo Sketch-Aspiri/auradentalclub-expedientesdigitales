@@ -36,7 +36,7 @@
 ## Manejo de errores y excepciones
 
 - Excepciones de dominio (ej. "no se puede eliminar un consentimiento ya firmado", "no se puede editar una consulta de otro doctor") se modelan como excepciones custom (`App\Exceptions\...`) con mensaje claro, no como `abort(400, 'texto suelto')` repetido en varios controladores.
-- `App\Exceptions\Handler` (o `bootstrap/app.php` en Laravel 11 con `->withExceptions()`) centraliza el render de esas excepciones a una respuesta amigable — no captures la excepción en cada controlador por separado.
+- `App\Exceptions\Handler` (o `bootstrap/app.php` en Laravel 12 con `->withExceptions()`) centraliza el render de esas excepciones a una respuesta amigable — no captures la excepción en cada controlador por separado.
 - **Nunca** silencies una excepción con un `catch` vacío o un `catch (\Throwable $e) {}` — como mínimo se registra con `report($e)` o `Log::error()` antes de responder al usuario. Ver regla global del usuario: "nunca silencies errores".
 - Mensajes de error mostrados al usuario son genéricos y en español ("No se pudo guardar el consentimiento, intenta de nuevo"); el detalle técnico va solo al log, nunca a la respuesta HTTP ni a la vista.
 - **Nunca** incluyas datos clínicos del paciente (nombre, diagnóstico, alergias, notas) en el mensaje de una excepción, en `Log::` a nivel `info`/`error` sin necesidad, ni en la URL (query string) — ver `CLAUDE.md` §5.

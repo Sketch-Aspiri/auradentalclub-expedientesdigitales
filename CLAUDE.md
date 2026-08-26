@@ -8,7 +8,7 @@ Plataforma web para el registro y consulta del historial clínico de los pacient
 
 ## 2. Stack técnico
 
-- **Backend:** Laravel 11, PHP 8.3
+- **Backend:** Laravel 12, PHP 8.4 (gestionado con Laravel Herd) — Laravel 11 salió de soporte de seguridad en marzo 2026, por lo que se usa la versión mayor vigente
 - **Frontend:** Blade + Livewire (sin Vue/React/Inertia)
 - **Estilos:** Tailwind CSS *(asumido por defecto — confirmar o cambiar si prefieres otra cosa)*
 - **Base de datos:** MySQL

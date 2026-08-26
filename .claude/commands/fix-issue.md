@@ -5,7 +5,7 @@ argument-hint: <descripción del bug> [ruta(s) o módulo afectado, opcional]
 
 # /fix-issue — Bug Fixer · Expedientes Digitales Aura Dental Club
 
-> Comando personalizado para este proyecto (Laravel 11 + Livewire + MySQL, expediente clínico bajo NOM-004/NOM-015/NOM-013). Sigue el patrón "reproducir con test en rojo → corregir a verde" (inspirado en `orch-fix-defect` y `tdd-guide`), con checklist de causa raíz de `silent-failure-hunter` y las prioridades de `php-reviewer`/`healthcare-reviewer`. Complementa a `/review` — este comando corrige, `/review` audita. Ante cualquier duda, `CLAUDE.md` (raíz) y `.claude/rules/testing.md` son la referencia autoritativa.
+> Comando personalizado para este proyecto (Laravel 12 + Livewire + MySQL, expediente clínico bajo NOM-004/NOM-015/NOM-013). Sigue el patrón "reproducir con test en rojo → corregir a verde" (inspirado en `orch-fix-defect` y `tdd-guide`), con checklist de causa raíz de `silent-failure-hunter` y las prioridades de `php-reviewer`/`healthcare-reviewer`. Complementa a `/review` — este comando corrige, `/review` audita. Ante cualquier duda, `CLAUDE.md` (raíz) y `.claude/rules/testing.md` son la referencia autoritativa.
 
 **Entrada**: $ARGUMENTS
 

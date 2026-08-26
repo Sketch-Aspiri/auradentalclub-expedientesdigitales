@@ -1,6 +1,6 @@
 ---
 name: hostinger-deploy
-description: Guía y checklist para desplegar Expedientes Digitales Aura Dental Club (Laravel 11 + Livewire + MySQL) en hosting Hostinger. Úsala cuando el usuario pida desplegar, publicar, subir a producción/staging, configurar el dominio en Hostinger, o preparar el primer deploy de este sistema.
+description: Guía y checklist para desplegar Expedientes Digitales Aura Dental Club (Laravel 12 + Livewire + MySQL) en hosting Hostinger. Úsala cuando el usuario pida desplegar, publicar, subir a producción/staging, configurar el dominio en Hostinger, o preparar el primer deploy de este sistema.
 ---
 
 # Deploy en Hostinger — Expedientes Digitales Aura Dental Club

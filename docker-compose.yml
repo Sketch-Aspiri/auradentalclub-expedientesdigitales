@@ -1,0 +1,23 @@
+services:
+  mysql:
+    image: mysql:8.4
+    container_name: aura_dental_club_mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root_secret
+      MYSQL_DATABASE: aura_dental_club
+      MYSQL_USER: aura_user
+      MYSQL_PASSWORD: aura_secret
+    ports:
+      - "3307:3306"
+    volumes:
+      - aura_mysql_data:/var/lib/mysql
+      - ./docker/mysql/init:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot_secret"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  aura_mysql_data:
