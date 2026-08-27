@@ -3,6 +3,7 @@
 use App\Enums\UserRole;
 use App\Models\Consultation;
 use App\Models\MedicalHistory;
+use App\Models\OdontogramRecord;
 use App\Models\Patient;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
@@ -16,6 +17,7 @@ test('el borrado permanente de un paciente purga sus registros clínicos y audit
     $activeConsultation = Consultation::factory()->for($patient)->create();
     $trashedConsultation = Consultation::factory()->for($patient)->create();
     $trashedConsultation->delete();
+    $odontogramRecord = OdontogramRecord::factory()->for($patient)->create();
 
     // Act
     $patient->forceDelete();
@@ -25,6 +27,7 @@ test('el borrado permanente de un paciente purga sus registros clínicos y audit
     $this->assertDatabaseMissing('medical_histories', ['id' => $history->id]);
     $this->assertDatabaseMissing('consultations', ['id' => $activeConsultation->id]);
     $this->assertDatabaseMissing('consultations', ['id' => $trashedConsultation->id]);
+    $this->assertDatabaseMissing('odontogram_records', ['id' => $odontogramRecord->id]);
 
     // Assert — cada purga quedó registrada en audit_logs con el patient_id correcto
     foreach ([
@@ -32,6 +35,7 @@ test('el borrado permanente de un paciente purga sus registros clínicos y audit
         [MedicalHistory::class, $history->id],
         [Consultation::class, $activeConsultation->id],
         [Consultation::class, $trashedConsultation->id],
+        [OdontogramRecord::class, $odontogramRecord->id],
     ] as [$type, $id]) {
         $this->assertDatabaseHas('audit_logs', [
             'user_id' => $superadmin->id,

@@ -19,6 +19,12 @@
                     </a>
                 @endcan
 
+                @can('viewAny', App\Models\OdontogramRecord::class)
+                    <a href="{{ route('patients.odontogram', $patient) }}" class="text-aura-olive hover:underline">
+                        Odontograma
+                    </a>
+                @endcan
+
                 @can('update', $patient)
                     <a href="{{ route('patients.edit', $patient) }}" class="text-aura-olive hover:underline">
                         Editar

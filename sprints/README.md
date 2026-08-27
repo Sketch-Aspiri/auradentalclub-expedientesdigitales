@@ -99,7 +99,7 @@ Abre `http://localhost:8081` e inicia sesión:
 | 1 | [Pacientes (ficha de identificación)](sprint-01-pacientes.md) | 0 | Completado |
 | 2 | [Historia clínica / anamnesis](sprint-02-historia-clinica.md) | 1 | Completado |
 | 3 | [Consultas](sprint-03-consultas.md) | 1, 2 | Completado |
-| 4 | [Odontograma digital interactivo](sprint-04-odontograma.md) | 1 | No iniciado |
+| 4 | [Odontograma digital interactivo](sprint-04-odontograma.md) | 1 | En progreso |
 | 5 | [Consentimientos informados](sprint-05-consentimientos.md) | 1, 2 | No iniciado |
 | 6 | [Hoja de evolución y control (costos)](sprint-06-evolucion-costos.md) | 1, 3 | No iniciado |
 | 7 | [Carga de archivos](sprint-07-archivos.md) | 1 (y opcionalmente 3) | No iniciado |
@@ -116,6 +116,7 @@ Estados válidos: `No iniciado` · `En progreso` · `Bloqueado` · `Completado`.
 - **Sprint 2 completado** (2026-08-26): historia clínica/anamnesis con cifrado en reposo (`encrypted` cast) en los campos sensibles, un solo registro por paciente (constraint `unique` + `updateOrCreate`), `MedicalHistoryPolicy` igual que `PatientPolicy`, `audit_logs` conectado. Ya se puede empezar el Sprint 3 (Consultas) o el 4 (Odontograma) en paralelo.
 - **Sprint 3 completado** (2026-08-27): módulo de consultas por cita con cifrado en reposo de las notas clínicas, `ConsultationPolicy` igual que `PatientPolicy`, `doctor_id` automático para el rol doctor y selector de doctor para administrador/superadmin, soft delete, historial cronológico, `audit_logs` conectado. Habilita el Sprint 6 (Hoja de evolución y control).
 - **4 (Odontograma)** solo depende de Pacientes, no de Historia clínica/Consultas — puede adelantarse en paralelo a 2/3 si conviene.
+- **Sprint 4 en progreso** (2026-08-27): odontograma interactivo por superficie con historial append-only, numeración FDI confirmada, catálogo de 12 estados (`App\Enums\ToothStatus`, ampliable). **Livewire 4 entró al stack aquí** — es el primer módulo realmente interactivo. Nota clínica cifrada en reposo, `audit_logs` conectado, `OdontogramRecordPolicy` (sin `update`: append-only). Falta cerrar la revisión `code-reviewer` para marcarlo `Completado`.
 - **7 (Archivos)** puede empezar en paralelo a 3 una vez que 1 esté listo, ya que `patient_files.consultation_id` es nullable (`CLAUDE.md` §6).
 - **10 (Dashboard: actividad reciente)** es una mejora de la pantalla de inicio, prioridad baja, no bloquea nada. El rediseño visual del dashboard (banner, rejilla de módulos, navegación móvil) ya se hizo el 2026-08-27; falta conectar la sección "Actividad reciente" a datos reales, lo cual necesita confirmación del cliente sobre alcance y nivel de detalle (PHI) antes de implementar.
 - **Timezone de la app** fijado en `America/Cancun` (UTC-5, sin horario de verano) el 2026-08-27 — `config/app.php` con fallback `env('APP_TIMEZONE', ...)`. Todas las fechas mostradas y `diffForHumans` usan esta zona.

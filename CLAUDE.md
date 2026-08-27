@@ -93,8 +93,7 @@ Este esquema surge de digitalizar las hojas físicas actuales del expediente (fi
 **`treatment_records`** (Hoja de Evolución y Control, con costos)
 `id`, `patient_id` (FK), `consultation_id` (FK, nullable), `doctor_id` (FK), `treatment_date`, `procedure_performed`, `materials_used` (texto), `cost`, `amount_paid` (a cuenta), `balance` (saldo), timestamps
 
-**`odontogram_records`** (un registro por diente por paciente, estado actual)
-`id`, `patient_id` (FK), `tooth_number` (notación FDI: 11–18, 21–28, 31–38, 41–48 — *asumido, pendiente de confirmar*), `status` (enum ampliable: sano, caries, obturado, corona, extraído, endodoncia, implante, etc.), `note` (texto libre), `updated_by` (FK → users), timestamps
+**`odontogram_records`** — **implementado en el Sprint 4 con un esquema ampliado, confirmado con el cliente el 2026-08-27** (ver `sprints/sprint-04-odontograma.md`): historial *append-only* (no un registro por diente, sino un registro por hallazgo), con `surface` nullable (mesial/distal/oclusal/vestibular/lingual, o `null` = diente completo), `recorded_by`, `recorded_at`, soft deletes y `note` cifrada. Columnas reales: `id`, `patient_id` (FK), `recorded_by` (FK → users), `tooth_number` (FDI 11–48, dentición permanente, confirmada), `surface` (enum nullable), `status` (enum ampliable de 12 estados, `App\Enums\ToothStatus`), `note` (texto, `encrypted`), `recorded_at` (date), `deleted_at`, timestamps. El estado "vigente" de una superficie es el hallazgo más reciente no archivado.
 
 **`patient_files`** (radiografías, fotos, documentos)
 `id`, `patient_id` (FK), `consultation_id` (FK, nullable), `uploaded_by` (FK → users), `file_path`, `file_type` (enum: radiografía/foto/documento), `description`, timestamps

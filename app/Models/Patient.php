@@ -45,6 +45,7 @@ class Patient extends Model
         // (consentimientos, archivos, hoja de evolución, odontograma).
         static::forceDeleting(function (Patient $patient) {
             $patient->consultations()->withTrashed()->get()->each->forceDelete();
+            $patient->odontogramRecords()->withTrashed()->get()->each->forceDelete();
             $patient->medicalHistory?->delete();
         });
     }
@@ -69,5 +70,10 @@ class Patient extends Model
     public function consultations(): HasMany
     {
         return $this->hasMany(Consultation::class);
+    }
+
+    public function odontogramRecords(): HasMany
+    {
+        return $this->hasMany(OdontogramRecord::class);
     }
 }
