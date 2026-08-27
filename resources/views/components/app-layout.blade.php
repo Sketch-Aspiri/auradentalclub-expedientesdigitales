@@ -15,7 +15,7 @@
             <a href="{{ route('dashboard') }}"
                class="inline-flex rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-aura-olive">
                 <img src="{{ asset('logos/logo_completo.png') }}" alt="aura dental club"
-                     width="3604" height="1394" class="h-8 w-auto">
+                     width="3604" height="1394" class="h-10 w-auto">
             </a>
 
             <button type="button" id="nav-toggle" aria-expanded="false" aria-controls="mobile-nav"
@@ -45,7 +45,7 @@
                 <a href="{{ route('dashboard') }}"
                    class="mb-10 block w-fit rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-aura-olive">
                     <img src="{{ asset('logos/logo_completo.png') }}" alt="aura dental club"
-                         width="3604" height="1394" class="h-9 w-auto">
+                         width="3604" height="1394" class="h-12 w-auto">
                 </a>
 
                 <nav aria-label="Principal">

@@ -2,7 +2,7 @@
     <x-slot:aside>
         <img src="{{ asset('logos/logo_completo.png') }}" alt="aura dental club"
              width="3604" height="1394" loading="eager"
-             class="relative z-10 h-10 w-auto max-w-[220px] shrink-0 self-start brightness-0 invert">
+             class="relative z-10 h-16 w-auto max-w-[340px] shrink-0 self-start brightness-0 invert lg:h-20">
 
         <div class="relative z-10 max-w-xs">
             <p class="text-2xl font-light leading-snug tracking-tight">
@@ -21,7 +21,7 @@
     <div class="mx-auto w-full max-w-sm">
         <img src="{{ asset('logos/logo_completo.png') }}" alt="aura dental club"
              width="3604" height="1394" loading="eager"
-             class="h-9 w-auto md:hidden">
+             class="h-12 w-auto md:hidden">
 
         <div class="mt-8 md:mt-0">
             <h1 class="text-xl font-medium text-aura-gray-dark">Iniciar sesión</h1>
