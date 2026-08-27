@@ -74,6 +74,7 @@ class PatientList extends Component
         $search = trim($this->search);
 
         return Patient::query()
+            ->with('latestConsultation.doctor:id,name')
             ->when($this->archived, fn ($query) => $query->onlyTrashed())
             ->when($search !== '', function ($query) use ($search) {
                 $query->where(function ($query) use ($search) {

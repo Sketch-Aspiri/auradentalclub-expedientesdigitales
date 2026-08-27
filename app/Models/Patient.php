@@ -101,6 +101,15 @@ class Patient extends Model
         return $this->hasMany(Consultation::class);
     }
 
+    /**
+     * Última consulta del paciente (por fecha, desempate por id) — para mostrar el doctor
+     * tratante más reciente sin traer todo el historial. Respeta el soft delete de consultas.
+     */
+    public function latestConsultation(): HasOne
+    {
+        return $this->hasOne(Consultation::class)->latestOfMany(['consultation_date', 'id']);
+    }
+
     public function odontogramRecords(): HasMany
     {
         return $this->hasMany(OdontogramRecord::class);

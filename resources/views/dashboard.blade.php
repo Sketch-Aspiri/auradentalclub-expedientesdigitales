@@ -53,7 +53,7 @@
                 </span>
             </a>
 
-            <a href="{{ route('patients.index') }}"
+            <a href="{{ route('odontogram') }}"
                class="group rounded-lg border border-aura-gray-light bg-white p-5 transition-colors motion-reduce:transition-none hover:border-aura-olive focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-aura-olive">
                 <span class="flex h-9 w-9 items-center justify-center rounded bg-aura-olive text-white">
                     <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -67,7 +67,7 @@
                     </svg>
                 </span>
                 <span class="mt-1 block text-sm text-aura-gray">
-                    Estado por diente y superficie en notación FDI, con historial. Se abre desde la ficha de cada paciente.
+                    Busca un paciente y consulta o edita su odontograma: estado por diente y superficie en notación FDI, con historial.
                 </span>
             </a>
 

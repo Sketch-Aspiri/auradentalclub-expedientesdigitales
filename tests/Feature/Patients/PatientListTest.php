@@ -2,6 +2,7 @@
 
 use App\Enums\UserRole;
 use App\Livewire\Patients\PatientList;
+use App\Models\Consultation;
 use App\Models\Patient;
 use App\Models\User;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -81,6 +82,28 @@ test('la paginación muestra 15 pacientes por página', function () {
         ->assertViewHas('patients', fn ($patients) => $patients->perPage() === 15 && $patients->total() === 18)
         ->call('nextPage')
         ->assertViewHas('patients', fn ($patients) => $patients->currentPage() === 2);
+});
+
+test('el listado muestra el doctor de la consulta más reciente de cada paciente', function () {
+    $doctorAntiguo = User::factory()->role(UserRole::Doctor)->create(['name' => 'Dra. Prueba Antigua']);
+    $doctorReciente = User::factory()->role(UserRole::Doctor)->create(['name' => 'Dr. Prueba Reciente']);
+
+    $conConsultas = Patient::factory()->create(['full_name' => 'Paciente Con Consultas']);
+    Consultation::factory()->for($conConsultas)->create([
+        'doctor_id' => $doctorAntiguo->id,
+        'consultation_date' => now()->subYear()->format('Y-m-d'),
+    ]);
+    Consultation::factory()->for($conConsultas)->create([
+        'doctor_id' => $doctorReciente->id,
+        'consultation_date' => now()->subMonth()->format('Y-m-d'),
+    ]);
+
+    $sinConsultas = Patient::factory()->create(['full_name' => 'Paciente Sin Consultas']);
+
+    Livewire::test(PatientList::class)
+        ->assertSee('Dr. Prueba Reciente')
+        ->assertDontSee('Dra. Prueba Antigua')
+        ->assertSeeInOrder(['Paciente Sin Consultas', '—']);
 });
 
 test('un visitante no autenticado no puede montar el listado', function () {

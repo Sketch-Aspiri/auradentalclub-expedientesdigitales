@@ -7,13 +7,23 @@ use App\Models\Patient;
 use Illuminate\View\View;
 
 /**
- * Pantalla del odontograma de un paciente. La interacción (seleccionar diente, registrar
- * hallazgos, ver historial) vive en el componente Livewire App\Livewire\Patients\Odontogram;
- * este controlador solo resuelve el acceso y audita la apertura del expediente.
+ * Odontograma. La interacción (seleccionar diente, registrar hallazgos, ver historial)
+ * vive en el componente Livewire App\Livewire\Patients\Odontogram; estos controladores
+ * solo resuelven el acceso y auditan la apertura del expediente.
+ *
+ * - `index`  → pantalla global: buscar un paciente y ver su odontograma (Livewire\Odontogram\Browser).
+ * - `show`   → odontograma de un paciente concreto, enlazado desde su ficha.
  */
 class OdontogramController extends Controller
 {
-    public function __invoke(Patient $patient): View
+    public function index(): View
+    {
+        $this->authorize('viewAny', OdontogramRecord::class);
+
+        return view('odontogram.index');
+    }
+
+    public function show(Patient $patient): View
     {
         $this->authorize('viewAny', OdontogramRecord::class);
 

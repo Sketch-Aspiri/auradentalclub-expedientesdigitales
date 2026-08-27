@@ -1,7 +1,8 @@
 @php
     $link = 'flex items-center gap-3 rounded px-3 py-2 text-sm transition-colors motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-aura-olive';
     $isDashboard = request()->routeIs('dashboard');
-    $isPatients = request()->routeIs('patients.*', 'consultations.*');
+    $isPatients = request()->routeIs('patients.*', 'consultations.*') && ! request()->routeIs('patients.odontogram');
+    $isOdontogram = request()->routeIs('odontogram', 'patients.odontogram');
 @endphp
 
 <div class="space-y-1">
@@ -21,6 +22,15 @@
             <path stroke-linecap="round" stroke-linejoin="round" d="M16 19v-1a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v1M9.5 10.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7ZM17 10.5a3 3 0 0 0-1.7-5.4M21 19v-1a4 4 0 0 0-3-3.85"/>
         </svg>
         Pacientes
+    </a>
+
+    <a href="{{ route('odontogram') }}"
+       @class([$link, 'bg-aura-olive text-white' => $isOdontogram, 'text-aura-gray-dark hover:bg-aura-cream' => ! $isOdontogram])
+       @if ($isOdontogram) aria-current="page" @endif>
+        <svg class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 4.5c-1.6 0-2.6.9-4 .9-1.6 0-3-1-4.3.3C2.3 7 2.6 9.6 3.3 12.6c.4 1.7.6 3.4 1 5 .4 1.7 1 2.9 2 2.9 1.3 0 1.7-1.7 2-3.4.3-1.6.6-3 1.7-3s1.4 1.4 1.7 3c.3 1.7.7 3.4 2 3.4 1 0 1.6-1.2 2-2.9.4-1.6.6-3.3 1-5 .7-3 1-5.6-.4-6.9-1.3-1.3-2.7-.3-4.3-.3-1.4 0-2.4-.9-4-.9Z"/>
+        </svg>
+        Odontograma
     </a>
 
     @if (auth()->user()?->isSuperadmin())

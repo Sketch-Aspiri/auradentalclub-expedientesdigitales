@@ -69,7 +69,7 @@
     <div class="mt-6 overflow-hidden rounded-lg border border-aura-gray-light bg-white"
          wire:loading.class="opacity-60" wire:target="search, toggleArchived, clearSearch, nextPage, previousPage, gotoPage">
         <div class="overflow-x-auto">
-            <table class="w-full min-w-[38rem] text-sm">
+            <table class="w-full min-w-[44rem] text-sm">
                 <caption class="sr-only">
                     {{ $archived ? 'Listado de pacientes archivados' : 'Listado de pacientes activos' }}
                 </caption>
@@ -79,6 +79,7 @@
                         <th scope="col" class="px-4 py-3 text-left font-medium">Nombre</th>
                         <th scope="col" class="px-4 py-3 text-left font-medium">Edad</th>
                         <th scope="col" class="px-4 py-3 text-left font-medium">Teléfono</th>
+                        <th scope="col" class="px-4 py-3 text-left font-medium">Último doctor</th>
                         <th scope="col" class="px-4 py-3 text-right font-medium"><span class="sr-only">Acciones</span></th>
                     </tr>
                 </thead>
@@ -100,6 +101,7 @@
                             </td>
                             <td class="whitespace-nowrap px-4 py-3 text-aura-gray-dark">{{ $patient->age }}</td>
                             <td class="whitespace-nowrap px-4 py-3 text-aura-gray-dark">{{ $patient->phone }}</td>
+                            <td class="px-4 py-3 text-aura-gray-dark">{{ $patient->latestConsultation?->doctor?->name ?? '—' }}</td>
                             <td class="px-4 py-3 text-right">
                                 @if ($archived)
                                     @can('restore', $patient)
@@ -118,7 +120,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="5" class="px-4 py-12 text-center">
+                            <td colspan="6" class="px-4 py-12 text-center">
                                 <p class="text-sm text-aura-gray">
                                     @if (trim($search) !== '')
                                         No se encontraron pacientes para «{{ trim($search) }}».
