@@ -74,6 +74,23 @@ Usa la base `aura_dental_testing` (creada automáticamente por `docker/mysql/ini
 - **Estilos de Tailwind no cargan / la página se ve sin diseño:** falta `npm run dev` corriendo, o falta compilar con `npm run build` para una vista rápida sin hot-reload.
 - **`Vite manifest not found`:** corre `npm run build` (o mantén `npm run dev` activo mientras navegas).
 
+### 5. Ver la base de datos (phpMyAdmin)
+
+El `docker-compose.yml` incluye un servicio `phpmyadmin` bajo el perfil de Compose `dev`, así que **no** arranca con `docker compose up -d` normal (solo para desarrollo local — nunca se despliega a producción).
+
+```powershell
+docker compose --profile dev up -d
+```
+
+Abre `http://localhost:8081` e inicia sesión:
+
+| Usuario | Contraseña | Alcance |
+|---|---|---|
+| `aura_user` | `aura_secret` | Solo la base `aura_dental_club` |
+| `root` | `root_secret` | Todas las bases (incluye `aura_dental_testing`) |
+
+> El servicio se conecta al contenedor de MySQL por la red interna de Docker (`PMA_HOST=mysql`, puerto `3306`), no por `127.0.0.1:3307` — ese puerto host es solo para que Laravel se conecte desde fuera del contenedor.
+
 ## Roadmap
 
 | # | Sprint | Depende de | Estado |
@@ -81,7 +98,7 @@ Usa la base `aura_dental_testing` (creada automáticamente por `docker/mysql/ini
 | 0 | [Fundación del proyecto](sprint-00-fundacion.md) | — | Completado |
 | 1 | [Pacientes (ficha de identificación)](sprint-01-pacientes.md) | 0 | Completado |
 | 2 | [Historia clínica / anamnesis](sprint-02-historia-clinica.md) | 1 | Completado |
-| 3 | [Consultas](sprint-03-consultas.md) | 1, 2 | No iniciado |
+| 3 | [Consultas](sprint-03-consultas.md) | 1, 2 | Completado |
 | 4 | [Odontograma digital interactivo](sprint-04-odontograma.md) | 1 | No iniciado |
 | 5 | [Consentimientos informados](sprint-05-consentimientos.md) | 1, 2 | No iniciado |
 | 6 | [Hoja de evolución y control (costos)](sprint-06-evolucion-costos.md) | 1, 3 | No iniciado |
@@ -96,6 +113,7 @@ Estados válidos: `No iniciado` · `En progreso` · `Bloqueado` · `Completado`.
 - **Sprint 0 completado** (2026-08-26): proyecto Laravel 12 + PHP 8.4 corriendo, auth a medida, roles, Tailwind con paleta de marca, `audit_logs` con trait `Auditable`, Pest en verde.
 - **Sprint 1 completado** (2026-08-26): CRUD de pacientes (alta/edición/búsqueda/eliminación), `PatientPolicy` (los tres roles con acceso CRUD completo, `forceDelete` solo superadmin), soft deletes, `audit_logs` conectado.
 - **Sprint 2 completado** (2026-08-26): historia clínica/anamnesis con cifrado en reposo (`encrypted` cast) en los campos sensibles, un solo registro por paciente (constraint `unique` + `updateOrCreate`), `MedicalHistoryPolicy` igual que `PatientPolicy`, `audit_logs` conectado. Ya se puede empezar el Sprint 3 (Consultas) o el 4 (Odontograma) en paralelo.
+- **Sprint 3 completado** (2026-08-27): módulo de consultas por cita con cifrado en reposo de las notas clínicas, `ConsultationPolicy` igual que `PatientPolicy`, `doctor_id` automático para el rol doctor y selector de doctor para administrador/superadmin, soft delete, historial cronológico, `audit_logs` conectado. Habilita el Sprint 6 (Hoja de evolución y control).
 - **4 (Odontograma)** solo depende de Pacientes, no de Historia clínica/Consultas — puede adelantarse en paralelo a 2/3 si conviene.
 - **7 (Archivos)** puede empezar en paralelo a 3 una vez que 1 esté listo, ya que `patient_files.consultation_id` es nullable (`CLAUDE.md` §6).
 - **8 y 9 nunca se saltan** — son los gates de "esto toca datos clínicos reales" antes de que la clínica use el sistema en producción.

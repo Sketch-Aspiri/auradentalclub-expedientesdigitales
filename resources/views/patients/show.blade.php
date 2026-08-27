@@ -13,6 +13,12 @@
                     </a>
                 @endcan
 
+                @can('viewAny', App\Models\Consultation::class)
+                    <a href="{{ route('patients.consultations.index', $patient) }}" class="text-aura-olive hover:underline">
+                        Consultas
+                    </a>
+                @endcan
+
                 @can('update', $patient)
                     <a href="{{ route('patients.edit', $patient) }}" class="text-aura-olive hover:underline">
                         Editar
