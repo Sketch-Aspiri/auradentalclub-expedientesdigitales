@@ -182,6 +182,15 @@ Este repo trae herramientas propias en `.claude/` — úsalas en vez de improvis
   - cuando se introduzca o modifique una migración que afecte una tabla con datos de paciente;
   - periódicamente sobre el repo completo si ha pasado tiempo desde la última auditoría o tras varios cambios acumulados.
   Un solo hallazgo CRÍTICO de este agente (PHI expuesto, autorización o auditoría faltante) bloquea el despliegue — no lo omitas por prisa.
+- **Agente `ux-ui-designer`** (`.claude/agents/ux-ui-designer.md`) — diseñador de front-end y UX/UI: identidad de marca Aura (minimalista, paleta neutra + acento oliva, ver §7) y usabilidad de un sistema clínico real. **Úsalo, sin que el usuario lo pida**, cada vez que se pida o se haga un cambio en:
+  - diseño visual, layout, jerarquía, espaciado o estética de cualquier pantalla;
+  - vistas Blade (`resources/views/**`) o componentes Blade/Livewire con parte visual;
+  - estilos Tailwind, clases de utilidad, o los tokens de marca en `resources/css/app.css` (`@theme`);
+  - formularios (estructura, agrupación de campos, estados de validación mostrados), tablas de datos, navegación, modales de confirmación;
+  - accesibilidad (contraste, foco, teclado, ARIA, tamaño de áreas táctiles), responsive, o estilos de impresión del expediente;
+  - textos de interfaz de usuario cuando afectan la experiencia (estados vacíos, mensajes, microcopy), no un typo suelto.
+
+  Flujo recomendado: **`ux-ui-designer` diseña e implementa la UI → luego `code-reviewer`** revisa el resultado (obligatorio si además toca datos de paciente, autorización o archivos). Para un ajuste puramente cosmético y aislado (un margen, un color de token ya definido) invocarlo es buena práctica pero no estrictamente obligatorio. El agente no debilita nunca la seguridad de datos clínicos por conveniencia de UI — si su propuesta y una regla de §5 chocan, gana §5.
 
 Reglas complementarias en `.claude/rules/`: `code-style.md` (convenciones de código, ver también §8), `testing.md` (estándares de pruebas, ver también §9) y `api-conventios.md` (rutas, códigos HTTP y manejo de errores).
 
