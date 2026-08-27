@@ -59,6 +59,37 @@ trait Auditable
         $this->recordAuditEvent('viewed');
     }
 
+    /**
+     * Registra un evento `viewed` a lo sumo una vez por usuario / registro / día. Pensado
+     * para accesos de alta frecuencia donde `recordView()` inundaría la tabla — p. ej. la
+     * foto de identificación del paciente, que se pide en cada fila de un listado. Conserva
+     * el rastro ("este usuario accedió a este expediente hoy") sin una fila por request.
+     *
+     * El dedup es best-effort: dos requests concurrentes pueden pasar ambas el `exists()` y
+     * crear dos filas `viewed` el mismo día. El impacto es cosmético (una fila de más), no
+     * una pérdida de rastro; no se usa un índice único para no acoplar el esquema a este caso.
+     */
+    public function recordViewOncePerDay(): void
+    {
+        if (! Auth::check()) {
+            return;
+        }
+
+        $alreadyLoggedToday = AuditLog::query()
+            ->where('user_id', Auth::id())
+            ->where('auditable_type', static::class)
+            ->where('auditable_id', $this->getKey())
+            ->where('action', 'viewed')
+            ->whereDate('created_at', now()->toDateString())
+            ->exists();
+
+        if ($alreadyLoggedToday) {
+            return;
+        }
+
+        $this->recordAuditEvent('viewed');
+    }
+
     protected function recordAuditEvent(string $action): void
     {
         if (! Auth::check()) {

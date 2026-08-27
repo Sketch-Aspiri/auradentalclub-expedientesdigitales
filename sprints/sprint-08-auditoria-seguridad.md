@@ -27,6 +27,13 @@ No es "nuevo código", es verificación + remediación de lo que ya existe:
 - [ ] Confirmar que `composer audit` está limpio (o que los CVEs restantes están documentados con plan de mitigación).
 - [ ] Revisar cobertura de tests global (`.claude/rules/testing.md`, mínimo 80%).
 
+### Hallazgos diferidos desde sprints anteriores (ya identificados, pendientes de resolver aquí)
+
+- [ ] **Middleware global de cabeceras de seguridad + CSP** — hoy no existe. `X-Content-Type-Options`, `X-Frame-Options`/`frame-ancestors`, y una CSP para toda la app. Ojo: una CSP `script-src 'self'` rompería el `<script>` inline del formulario de foto (`patients/_form.blade.php`) y el `onerror` de `<x-patient-avatar>` — moverlos a un asset o usar nonce al introducir la CSP. (Detectado en la revisión de seguridad de la foto de paciente, Sprint 1.)
+- [ ] **PHI en `<title>` del navegador** — `patients/show.blade.php`, `consultations/*` y `medical-history/edit` renderizan el nombre del paciente en `<title>`, que queda en historial/favoritos. El odontograma y el listado ya se corrigieron; falta el resto. Usar un título neutro tipo "Expediente #123".
+- [ ] **Comando de barrido de archivos huérfanos** — `patient-photos/` (y en Sprint 7, `patient_files`) pueden quedar con archivos sin fila si un `save()` falla tras subir. Comando `artisan` periódico que compare disco contra BD.
+- [ ] **Índice compuesto en `audit_logs`** para `recordViewOncePerDay` (`user_id, auditable_type, auditable_id, action, created_at`) si el volumen lo justifica.
+
 ## Criterios de aceptación
 
 - [ ] Veredicto del agente `securrity-auditor`: `SEGURO PARA DESPLEGAR` (sin hallazgos CRÍTICO pendientes).

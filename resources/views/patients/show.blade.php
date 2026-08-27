@@ -1,9 +1,12 @@
 <x-app-layout :title="$patient->full_name">
     <div class="max-w-3xl">
-        <div class="flex items-start justify-between mb-6">
-            <div>
-                <h1 class="text-lg font-medium">{{ $patient->full_name }}</h1>
-                <p class="text-sm text-aura-gray">{{ $patient->age }} años · {{ $patient->sex === 'M' ? 'Masculino' : 'Femenino' }}</p>
+        <div class="flex items-start justify-between mb-6 gap-4">
+            <div class="flex items-start gap-4">
+                <x-patient-avatar :patient="$patient" size="md" />
+                <div>
+                    <h1 class="text-lg font-medium">{{ $patient->full_name }}</h1>
+                    <p class="text-sm text-aura-gray-dark">{{ $patient->age }} años · {{ $patient->sex === 'M' ? 'Masculino' : 'Femenino' }}</p>
+                </div>
             </div>
 
             <div class="flex items-center gap-3 text-sm">

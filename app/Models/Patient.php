@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Concerns\Auditable;
+use App\Support\PatientPhoto;
 use Carbon\Carbon;
 use Database\Factories\PatientFactory;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -11,6 +12,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Str;
 
 class Patient extends Model
 {
@@ -28,6 +30,8 @@ class Patient extends Model
         'email',
         'emergency_contact_name',
         'emergency_contact_phone',
+        // `photo_path` se omite a propósito: lo asigna el controlador vía App\Support\PatientPhoto
+        // (nunca por asignación masiva de una ruta arbitraria).
     ];
 
     protected function casts(): array
@@ -47,6 +51,7 @@ class Patient extends Model
             $patient->consultations()->withTrashed()->get()->each->forceDelete();
             $patient->odontogramRecords()->withTrashed()->get()->each->forceDelete();
             $patient->medicalHistory?->delete();
+            PatientPhoto::delete($patient->photo_path);
         });
     }
 
@@ -55,6 +60,30 @@ class Patient extends Model
         return Attribute::make(
             get: fn () => $this->birth_date ? Carbon::parse($this->birth_date)->age : null,
         );
+    }
+
+    public function hasPhoto(): bool
+    {
+        return $this->photo_path !== null && $this->photo_path !== '';
+    }
+
+    /**
+     * Iniciales para el avatar de reserva cuando el paciente no tiene foto.
+     */
+    protected function initials(): Attribute
+    {
+        return Attribute::make(get: function () {
+            $words = preg_split('/\s+/', trim((string) $this->full_name), -1, PREG_SPLIT_NO_EMPTY) ?: [];
+
+            if ($words === []) {
+                return '';
+            }
+
+            $first = Str::substr($words[0], 0, 1);
+            $last = count($words) > 1 ? Str::substr(end($words), 0, 1) : '';
+
+            return Str::upper($first.$last);
+        });
     }
 
     protected function auditPatientId(): ?int

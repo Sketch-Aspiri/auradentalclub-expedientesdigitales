@@ -1,6 +1,96 @@
 @php
     $patient = $patient ?? null;
+    $hasPhoto = (bool) $patient?->hasPhoto();
 @endphp
+
+<fieldset id="patient-photo-field" class="border-b border-aura-gray-light pb-6">
+    <legend class="text-sm font-medium text-aura-gray-dark">Foto de identificación</legend>
+    <p class="mt-1 text-xs text-aura-gray-dark">Parte de la ficha de identificación del expediente. Opcional.</p>
+
+    <div class="mt-4 flex flex-col gap-4 sm:flex-row sm:items-start">
+        <span class="relative flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-full bg-aura-sage/25 text-lg font-medium uppercase text-aura-gray-dark"
+              aria-hidden="true">
+            <span data-photo-initials>{{ $patient?->initials ?: '—' }}</span>
+            <img data-photo-current alt="" width="80" height="80"
+                 @if ($hasPhoto) src="{{ route('patients.photo', $patient) }}" @endif
+                 @class(['absolute inset-0 h-full w-full object-cover', 'hidden' => ! $hasPhoto])>
+            <img data-photo-preview alt="" width="80" height="80"
+                 class="absolute inset-0 hidden h-full w-full object-cover">
+        </span>
+
+        <div class="min-w-0 flex-1">
+            <label for="photo" class="mb-1 block text-sm text-aura-gray-dark">
+                {{ $hasPhoto ? 'Reemplazar foto' : 'Subir foto' }}
+            </label>
+            <input id="photo" type="file" name="photo" accept="image/jpeg,image/png,image/webp"
+                   data-photo-input
+                   aria-describedby="photo-help @error('photo') photo-error @enderror"
+                   class="block w-full text-sm text-aura-gray-dark file:mr-3 file:cursor-pointer file:rounded file:border file:border-aura-gray-light file:bg-white file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-aura-gray-dark hover:file:bg-aura-cream focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-aura-olive">
+            <p id="photo-help" class="mt-1 text-xs text-aura-gray-dark">JPG, PNG o WebP. Máximo 4 MB.</p>
+            @error('photo')
+                <p id="photo-error" role="alert" class="mt-1 text-xs text-red-600">{{ $message }}</p>
+            @enderror
+
+            @if ($hasPhoto)
+                <label class="mt-3 inline-flex items-center gap-2 text-sm text-aura-gray-dark">
+                    <input type="checkbox" name="remove_photo" value="1" data-photo-remove
+                           class="h-4 w-4 rounded border-aura-gray-light accent-aura-olive focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-aura-olive">
+                    Quitar foto actual
+                </label>
+            @endif
+        </div>
+    </div>
+</fieldset>
+
+<script>
+    (function () {
+        var field = document.getElementById('patient-photo-field');
+        if (!field) return;
+
+        var input = field.querySelector('[data-photo-input]');
+        var preview = field.querySelector('[data-photo-preview]');
+        var current = field.querySelector('[data-photo-current]');
+        var remove = field.querySelector('[data-photo-remove]');
+        var objectUrl = null;
+
+        function releaseUrl() {
+            if (objectUrl) {
+                URL.revokeObjectURL(objectUrl);
+                objectUrl = null;
+            }
+        }
+
+        input.addEventListener('change', function () {
+            releaseUrl();
+            var file = input.files && input.files[0];
+
+            if (!file || file.type.indexOf('image/') !== 0) {
+                preview.classList.add('hidden');
+                if (current && !(remove && remove.checked)) current.classList.remove('hidden');
+                return;
+            }
+
+            objectUrl = URL.createObjectURL(file);
+            preview.src = objectUrl;
+            preview.classList.remove('hidden');
+            if (current) current.classList.add('hidden');
+            if (remove) remove.checked = false;
+        });
+
+        if (remove) {
+            remove.addEventListener('change', function () {
+                if (remove.checked) {
+                    input.value = '';
+                    releaseUrl();
+                    preview.classList.add('hidden');
+                    if (current) current.classList.add('hidden');
+                } else if (current) {
+                    current.classList.remove('hidden');
+                }
+            });
+        }
+    })();
+</script>
 
 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
     <div class="sm:col-span-2">

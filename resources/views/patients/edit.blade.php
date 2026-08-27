@@ -2,7 +2,7 @@
     <div class="max-w-3xl">
         <h1 class="text-lg font-medium mb-6">Editar paciente</h1>
 
-        <form method="POST" action="{{ route('patients.update', $patient) }}" class="space-y-6">
+        <form method="POST" action="{{ route('patients.update', $patient) }}" enctype="multipart/form-data" class="space-y-6">
             @csrf
             @method('PUT')
 

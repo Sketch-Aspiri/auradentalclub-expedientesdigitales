@@ -5,36 +5,22 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StorePatientRequest;
 use App\Http\Requests\UpdatePatientRequest;
 use App\Models\Patient;
+use App\Support\PatientPhoto;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class PatientController extends Controller
 {
-    public function index(Request $request): View
+    /**
+     * La búsqueda, la paginación y el listado de archivados viven en el componente Livewire
+     * App\Livewire\Patients\PatientList; aquí solo se resuelve el acceso y se renderiza el
+     * contenedor, para conservar la ruta `patients.index`.
+     */
+    public function index(): View
     {
         $this->authorize('viewAny', Patient::class);
 
-        $search = trim((string) $request->query('q', ''));
-        $showArchived = $request->boolean('archived');
-
-        $patients = Patient::query()
-            ->when($showArchived, fn ($query) => $query->onlyTrashed())
-            ->when($search !== '', function ($query) use ($search) {
-                $query->where(function ($query) use ($search) {
-                    $query->where('full_name', 'like', "%{$search}%")
-                        ->orWhere('phone', 'like', "%{$search}%");
-                });
-            })
-            ->orderBy('full_name')
-            ->paginate(15)
-            ->withQueryString();
-
-        return view('patients.index', [
-            'patients' => $patients,
-            'search' => $search,
-            'showArchived' => $showArchived,
-        ]);
+        return view('patients.index');
     }
 
     public function create(): View
@@ -46,7 +32,13 @@ class PatientController extends Controller
 
     public function store(StorePatientRequest $request): RedirectResponse
     {
-        $patient = Patient::create($request->validated());
+        $patient = new Patient($request->safe()->except(['photo', 'remove_photo']));
+
+        if ($photo = $request->file('photo')) {
+            $patient->photo_path = PatientPhoto::store($photo);
+        }
+
+        $patient->save();
 
         return redirect()->route('patients.show', $patient)
             ->with('status', 'Paciente creado correctamente.');
@@ -70,7 +62,22 @@ class PatientController extends Controller
 
     public function update(UpdatePatientRequest $request, Patient $patient): RedirectResponse
     {
-        $patient->update($request->validated());
+        $previousPhoto = $patient->photo_path;
+
+        $patient->fill($request->safe()->except(['photo', 'remove_photo']));
+
+        if ($photo = $request->file('photo')) {
+            $patient->photo_path = PatientPhoto::store($photo);
+        } elseif ($request->boolean('remove_photo')) {
+            $patient->photo_path = null;
+        }
+
+        $patient->save();
+
+        // La foto anterior se borra solo tras un guardado exitoso y solo si cambió.
+        if ($previousPhoto !== null && $previousPhoto !== $patient->photo_path) {
+            PatientPhoto::delete($previousPhoto);
+        }
 
         return redirect()->route('patients.show', $patient)
             ->with('status', 'Paciente actualizado correctamente.');

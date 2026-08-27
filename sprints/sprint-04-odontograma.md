@@ -1,6 +1,6 @@
 # Sprint 4 — Odontograma digital interactivo
 
-**Estado:** En progreso
+**Estado:** Completado
 **Depende de:** Sprint 1 (puede correr en paralelo a Sprint 2/3)
 
 ## Objetivo

@@ -3,7 +3,9 @@
 namespace Database\Factories;
 
 use App\Models\Patient;
+use App\Support\PatientPhoto;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Http\UploadedFile;
 
 /**
  * @extends Factory<Patient>
@@ -31,5 +33,19 @@ class PatientFactory extends Factory
             'emergency_contact_name' => fake()->name(),
             'emergency_contact_phone' => fake()->numerify('55########'),
         ];
+    }
+
+    /**
+     * Paciente con foto de identificación. Requiere `Storage::fake('local')` en la prueba
+     * para no escribir en el disco real.
+     */
+    public function withPhoto(): static
+    {
+        return $this->afterCreating(function (Patient $patient) {
+            $patient->forceFill([
+                'photo_path' => UploadedFile::fake()->image('paciente.jpg', 400, 400)
+                    ->store(PatientPhoto::DIRECTORY, PatientPhoto::DISK),
+            ])->saveQuietly(); // sin disparar el evento `updated` de auditoría en el seeding
+        });
     }
 }
