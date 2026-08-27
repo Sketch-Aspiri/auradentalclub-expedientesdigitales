@@ -5,19 +5,19 @@ namespace App\Support;
 use Illuminate\Http\UploadedFile;
 
 /**
- * Foto de identificación del paciente (parte de la ficha, NOM-004). Fachada sobre
- * App\Support\PrivateImage: disco privado `local`, servida por la ruta autorizada
- * `patients.photo` — CLAUDE.md §5.
+ * Foto de perfil del personal de la clínica. Fachada sobre App\Support\PrivateImage:
+ * disco privado `local`, servida por la ruta autorizada `profile.photo`. Solo la propia
+ * cuenta ve su avatar; no se muestra el de otros usuarios.
  */
-final class PatientPhoto
+final class UserAvatar
 {
     public const DISK = PrivateImage::DISK;
 
-    public const DIRECTORY = 'patient-photos';
+    public const DIRECTORY = 'user-avatars';
 
     public static function store(UploadedFile $file): string
     {
-        return PrivateImage::store($file, self::DIRECTORY, 'photo', 'La foto no se pudo procesar. Sube otra imagen.');
+        return PrivateImage::store($file, self::DIRECTORY, 'photo');
     }
 
     public static function delete(?string $path): void

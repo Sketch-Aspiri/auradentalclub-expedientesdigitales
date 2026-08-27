@@ -1,15 +1,32 @@
-<div class="text-sm">
-    <p class="font-medium text-aura-gray-dark">{{ auth()->user()?->name }}</p>
-    <p class="mt-0.5 text-xs text-aura-gray">{{ auth()->user()?->role?->label() }}</p>
+@php
+    $item = '-mx-3 flex items-center gap-2 rounded px-3 py-2 text-sm text-aura-gray-dark transition-colors motion-reduce:transition-none hover:bg-aura-cream hover:text-aura-olive focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-aura-olive';
+@endphp
 
-    <form method="POST" action="{{ route('logout') }}" class="mt-2">
-        @csrf
-        <button type="submit"
-                class="-mx-3 inline-flex items-center gap-2 rounded px-3 py-2 text-sm text-aura-gray-dark transition-colors motion-reduce:transition-none hover:bg-aura-cream hover:text-aura-olive focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-aura-olive">
+<div class="text-sm">
+    <div class="flex items-center gap-2.5">
+        <x-user-avatar size="sm" />
+        <div class="min-w-0">
+            <p class="truncate font-medium text-aura-gray-dark">{{ auth()->user()?->name }}</p>
+            <p class="text-xs text-aura-gray">{{ auth()->user()?->role?->label() }}</p>
+        </div>
+    </div>
+
+    <div class="mt-2 space-y-0.5">
+        <a href="{{ route('profile.edit') }}" @class([$item, 'bg-aura-cream text-aura-olive' => request()->routeIs('profile.*')])>
             <svg class="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12H3.75m0 0 3.5-3.5M3.75 12l3.5 3.5M10 7.5V6a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-6a2 2 0 0 1-2-2v-1.5"/>
+                <path stroke-linecap="round" stroke-linejoin="round" d="M16 19v-1a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v1M12 11a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z"/>
             </svg>
-            Cerrar sesión
-        </button>
-    </form>
+            Mi perfil
+        </a>
+
+        <form method="POST" action="{{ route('logout') }}">
+            @csrf
+            <button type="submit" class="{{ $item }} w-full">
+                <svg class="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12H3.75m0 0 3.5-3.5M3.75 12l3.5 3.5M10 7.5V6a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-6a2 2 0 0 1-2-2v-1.5"/>
+                </svg>
+                Cerrar sesión
+            </button>
+        </form>
+    </div>
 </div>

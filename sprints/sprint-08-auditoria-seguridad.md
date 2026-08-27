@@ -33,6 +33,11 @@ No es "nuevo código", es verificación + remediación de lo que ya existe:
 - [ ] **PHI en `<title>` del navegador** — `patients/show.blade.php`, `consultations/*` y `medical-history/edit` renderizan el nombre del paciente en `<title>`, que queda en historial/favoritos. El odontograma y el listado ya se corrigieron; falta el resto. Usar un título neutro tipo "Expediente #123".
 - [ ] **Comando de barrido de archivos huérfanos** — `patient-photos/` (y en Sprint 7, `patient_files`) pueden quedar con archivos sin fila si un `save()` falla tras subir. Comando `artisan` periódico que compare disco contra BD.
 - [ ] **Índice compuesto en `audit_logs`** para `recordViewOncePerDay` (`user_id, auditable_type, auditable_id, action, created_at`) si el volumen lo justifica.
+- [ ] **Sesión tras cambio de contraseña** — hoy `ProfileController::updatePassword` solo hace `session()->regenerate()`. Falta `Auth::logoutOtherDevices()` + añadir el middleware `auth.session` (`AuthenticateSession`) al grupo autenticado para que expulse sesiones robadas. (Revisión de seguridad del perfil, 2026-08-27.)
+- [ ] **Registro y aviso de cambios de credenciales** — cambiar el correo o la contraseña no queda en ningún lado (`audit_logs` es solo de pacientes; `User` no se audita) y no se notifica al correo anterior. Canal de log `security` dedicado o tabla `user_security_events`, + correo al usuario ("si no fuiste tú, contacta al administrador"). Requiere mailer.
+- [ ] **`Password::defaults()`** — hoy es `min(12)` a secas. Evaluar `->uncompromised()` (k-anonymity HIBP) si el entorno de producción tiene salida a internet.
+- [ ] **`role` fuera de `User::$fillable`** — hoy está en `$fillable` (sin vía de explotación actual: nunca llega en datos validados), pero es un footgun latente. Quitarlo y asignar el rol solo por un setter explícito en la gestión de usuarios.
+- [ ] **Scripts inline** — `user-dropdown.blade.php`, `patients/_form.blade.php`, `profile/edit.blade.php` y `patient-avatar`/`user-avatar` (`onerror`) tienen JS inline que forzará `'unsafe-inline'` en la CSP. Mover a asset o usar nonce/hash al introducir la CSP.
 
 ## Criterios de aceptación
 

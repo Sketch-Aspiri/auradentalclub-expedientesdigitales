@@ -3,12 +3,15 @@
 namespace Database\Factories;
 
 use App\Enums\UserRole;
+use App\Models\User;
+use App\Support\UserAvatar;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\User>
+ * @extends Factory<User>
  */
 class UserFactory extends Factory
 {
@@ -49,5 +52,18 @@ class UserFactory extends Factory
         return $this->state(fn (array $attributes) => [
             'role' => $role,
         ]);
+    }
+
+    /**
+     * Usuario con foto de perfil. Requiere `Storage::fake('local')` en la prueba.
+     */
+    public function withPhoto(): static
+    {
+        return $this->afterCreating(function (User $user) {
+            $user->forceFill([
+                'photo_path' => UploadedFile::fake()->image('avatar.jpg', 300, 300)
+                    ->store(UserAvatar::DIRECTORY, UserAvatar::DISK),
+            ])->saveQuietly();
+        });
     }
 }

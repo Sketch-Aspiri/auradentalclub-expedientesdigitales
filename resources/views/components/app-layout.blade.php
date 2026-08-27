@@ -59,16 +59,10 @@
         </aside>
 
         <div class="flex min-w-0 flex-1 flex-col">
-            {{-- Barra superior de escritorio: identidad de la cuenta --}}
+            {{-- Barra superior de escritorio: identidad de la cuenta con menú --}}
             <header class="hidden border-b border-aura-gray-light bg-white px-6 py-3 md:block md:px-12">
-                <div class="mx-auto flex max-w-5xl items-center justify-end gap-3" aria-hidden="true">
-                    <div class="text-right leading-tight">
-                        <p class="text-sm font-medium text-aura-gray-dark">{{ auth()->user()?->name }}</p>
-                        <p class="text-xs text-aura-gray">{{ auth()->user()?->role?->label() }}</p>
-                    </div>
-                    <span class="inline-flex h-9 w-9 items-center justify-center rounded-full bg-aura-olive">
-                        <img src="{{ asset('logos/monograma.png') }}" alt="" class="h-4 w-4 brightness-0 invert">
-                    </span>
+                <div class="mx-auto flex max-w-5xl items-center justify-end">
+                    <x-user-dropdown />
                 </div>
             </header>
 
