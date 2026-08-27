@@ -5,6 +5,7 @@ use App\Models\Consultation;
 use App\Models\MedicalHistory;
 use App\Models\Patient;
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
 
 test('el borrado permanente de un paciente purga sus registros clínicos y audita cada uno', function () {
     // Arrange
@@ -39,6 +40,32 @@ test('el borrado permanente de un paciente purga sus registros clínicos y audit
             'auditable_type' => $type,
             'auditable_id' => $id,
         ]);
+    }
+});
+
+test('el borrado permanente no deja registros huérfanos en ninguna tabla con patient_id', function () {
+    // Contrato: cada tabla clínica que referencia a un paciente debe purgarse en
+    // Patient::forceDeleting(). Este test descubre esas tablas dinámicamente, así que
+    // fallará cuando un sprint futuro añada una relación sin conectarla al hook.
+    $superadmin = User::factory()->role(UserRole::Superadmin)->create();
+    $this->actingAs($superadmin);
+    $patient = Patient::factory()->create();
+    MedicalHistory::factory()->for($patient)->create();
+    Consultation::factory()->for($patient)->count(2)->create();
+
+    $patient->forceDelete();
+
+    // audit_logs se excluye a propósito: conserva el rastro histórico (sin FK, CLAUDE.md §5).
+    $tables = collect(DB::select(
+        "SELECT DISTINCT TABLE_NAME as t FROM INFORMATION_SCHEMA.COLUMNS
+         WHERE TABLE_SCHEMA = DATABASE() AND COLUMN_NAME = 'patient_id'"
+    ))->pluck('t')->reject(fn ($table) => $table === 'audit_logs');
+
+    expect($tables)->not->toBeEmpty();
+
+    foreach ($tables as $table) {
+        $orphans = DB::table($table)->where('patient_id', $patient->id)->count();
+        $this->assertSame(0, $orphans, "La tabla [{$table}] quedó con registros huérfanos tras el purgado del paciente. Añade su relación a Patient::forceDeleting().");
     }
 });
 

@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\OralHygieneLevel;
 use App\Models\Concerns\Auditable;
 use Database\Factories\ConsultationFactory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -50,6 +51,14 @@ class Consultation extends Model
             'risks_and_complications' => 'encrypted',
             'treatment_alternatives' => 'encrypted',
         ];
+    }
+
+    /**
+     * @param  Builder<Consultation>  $query
+     */
+    public function scopeOrderedForHistory($query): void
+    {
+        $query->orderByDesc('consultation_date')->orderByDesc('id');
     }
 
     public function patient(): BelongsTo

@@ -19,7 +19,7 @@
 
                 @can('delete', $consultation)
                     <form method="POST" action="{{ route('consultations.destroy', $consultation) }}"
-                          onsubmit="return confirm('¿Eliminar esta consulta? Quedará archivada y podrá restaurarla un administrador.');">
+                          onsubmit="return confirm('¿Eliminar esta consulta? Quedará archivada y se podrá restaurar desde la lista de consultas del paciente.');">
                         @csrf
                         @method('DELETE')
                         <button type="submit" class="text-red-600 hover:underline">Eliminar</button>

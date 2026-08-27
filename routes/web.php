@@ -14,8 +14,15 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard', DashboardController::class)->name('dashboard');
 
     Route::resource('patients', PatientController::class);
+    Route::put('patients/{patient}/restore', [PatientController::class, 'restore'])
+        ->withTrashed()
+        ->name('patients.restore');
+
     Route::singleton('patients.medical-history', PatientMedicalHistoryController::class)
         ->only(['edit', 'update']);
 
     Route::resource('patients.consultations', ConsultationController::class)->shallow();
+    Route::put('consultations/{consultation}/restore', [ConsultationController::class, 'restore'])
+        ->withTrashed()
+        ->name('consultations.restore');
 });

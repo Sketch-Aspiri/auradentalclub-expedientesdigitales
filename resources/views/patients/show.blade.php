@@ -27,7 +27,7 @@
 
                 @can('delete', $patient)
                     <form method="POST" action="{{ route('patients.destroy', $patient) }}"
-                          onsubmit="return confirm('¿Eliminar este paciente? Esta acción no se puede deshacer desde aquí.');">
+                          onsubmit="return confirm('¿Eliminar este paciente? Quedará archivado y se podrá restaurar desde «Ver archivados».');">
                         @csrf
                         @method('DELETE')
                         <button type="submit" class="text-red-600 hover:underline">Eliminar</button>

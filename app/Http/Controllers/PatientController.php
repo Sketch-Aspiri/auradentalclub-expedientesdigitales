@@ -16,8 +16,10 @@ class PatientController extends Controller
         $this->authorize('viewAny', Patient::class);
 
         $search = trim((string) $request->query('q', ''));
+        $showArchived = $request->boolean('archived');
 
         $patients = Patient::query()
+            ->when($showArchived, fn ($query) => $query->onlyTrashed())
             ->when($search !== '', function ($query) use ($search) {
                 $query->where(function ($query) use ($search) {
                     $query->where('full_name', 'like', "%{$search}%")
@@ -31,6 +33,7 @@ class PatientController extends Controller
         return view('patients.index', [
             'patients' => $patients,
             'search' => $search,
+            'showArchived' => $showArchived,
         ]);
     }
 
@@ -81,5 +84,15 @@ class PatientController extends Controller
 
         return redirect()->route('patients.index')
             ->with('status', 'Paciente eliminado correctamente.');
+    }
+
+    public function restore(Patient $patient): RedirectResponse
+    {
+        $this->authorize('restore', $patient);
+
+        $patient->restore();
+
+        return redirect()->route('patients.show', $patient)
+            ->with('status', 'Paciente restaurado correctamente.');
     }
 }

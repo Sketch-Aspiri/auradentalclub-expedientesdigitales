@@ -24,13 +24,22 @@ class ConsultationController extends Controller
 
         $consultations = $patient->consultations()
             ->with('doctor:id,name')
-            ->orderByDesc('consultation_date')
-            ->orderByDesc('id')
+            ->orderedForHistory()
             ->paginate(15);
+
+        // Las consultas archivadas de un paciente son excepcionales (borradas por error);
+        // el tope evita un listado sin cota que además descifra un diagnóstico por fila.
+        $archivedConsultations = $patient->consultations()
+            ->onlyTrashed()
+            ->with('doctor:id,name')
+            ->orderedForHistory()
+            ->limit(100)
+            ->get();
 
         return view('patients.consultations.index', [
             'patient' => $patient,
             'consultations' => $consultations,
+            'archivedConsultations' => $archivedConsultations,
         ]);
     }
 
@@ -94,6 +103,16 @@ class ConsultationController extends Controller
 
         return redirect()->route('patients.consultations.index', $patient)
             ->with('status', 'Consulta eliminada correctamente.');
+    }
+
+    public function restore(Consultation $consultation): RedirectResponse
+    {
+        $this->authorize('restore', $consultation);
+
+        $consultation->restore();
+
+        return redirect()->route('patients.consultations.index', $consultation->patient)
+            ->with('status', 'Consulta restaurada correctamente.');
     }
 
     /**
