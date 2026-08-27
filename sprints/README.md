@@ -105,6 +105,7 @@ Abre `http://localhost:8081` e inicia sesión:
 | 7 | [Carga de archivos](sprint-07-archivos.md) | 1 (y opcionalmente 3) | No iniciado |
 | 8 | [Auditoría, seguridad y cumplimiento NOM](sprint-08-auditoria-seguridad.md) | 1–7 | No iniciado |
 | 9 | [QA final, UAT y deploy a Hostinger](sprint-09-deploy-uat.md) | 8 | No iniciado |
+| 10 | [Dashboard: actividad reciente](sprint-10-dashboard-actividad.md) | 1, 3 | No iniciado |
 
 Estados válidos: `No iniciado` · `En progreso` · `Bloqueado` · `Completado`. Actualiza esta tabla junto con el archivo del sprint.
 
@@ -116,4 +117,6 @@ Estados válidos: `No iniciado` · `En progreso` · `Bloqueado` · `Completado`.
 - **Sprint 3 completado** (2026-08-27): módulo de consultas por cita con cifrado en reposo de las notas clínicas, `ConsultationPolicy` igual que `PatientPolicy`, `doctor_id` automático para el rol doctor y selector de doctor para administrador/superadmin, soft delete, historial cronológico, `audit_logs` conectado. Habilita el Sprint 6 (Hoja de evolución y control).
 - **4 (Odontograma)** solo depende de Pacientes, no de Historia clínica/Consultas — puede adelantarse en paralelo a 2/3 si conviene.
 - **7 (Archivos)** puede empezar en paralelo a 3 una vez que 1 esté listo, ya que `patient_files.consultation_id` es nullable (`CLAUDE.md` §6).
+- **10 (Dashboard: actividad reciente)** es una mejora de la pantalla de inicio, prioridad baja, no bloquea nada. El rediseño visual del dashboard (banner, rejilla de módulos, navegación móvil) ya se hizo el 2026-08-27; falta conectar la sección "Actividad reciente" a datos reales, lo cual necesita confirmación del cliente sobre alcance y nivel de detalle (PHI) antes de implementar.
+- **Timezone de la app** fijado en `America/Cancun` (UTC-5, sin horario de verano) el 2026-08-27 — `config/app.php` con fallback `env('APP_TIMEZONE', ...)`. Todas las fechas mostradas y `diffForHumans` usan esta zona.
 - **8 y 9 nunca se saltan** — son los gates de "esto toca datos clínicos reales" antes de que la clínica use el sistema en producción.
