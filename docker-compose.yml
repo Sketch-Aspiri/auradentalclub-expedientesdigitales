@@ -19,5 +19,23 @@ services:
       timeout: 5s
       retries: 10
 
+  phpmyadmin:
+    image: phpmyadmin:5
+    container_name: aura_dental_club_phpmyadmin
+    restart: unless-stopped
+    # Solo herramienta de desarrollo local: no arranca con `docker compose up -d`.
+    # Úsalo con `docker compose --profile dev up -d`. Nunca debe llegar a producción.
+    profiles:
+      - dev
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+      UPLOAD_LIMIT: 64M
+    ports:
+      - "8081:80"
+    depends_on:
+      mysql:
+        condition: service_healthy
+
 volumes:
   aura_mysql_data:
