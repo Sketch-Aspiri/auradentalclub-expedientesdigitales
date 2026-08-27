@@ -53,8 +53,25 @@
                 </span>
             </a>
 
+            <a href="{{ route('patients.index') }}"
+               class="group rounded-lg border border-aura-gray-light bg-white p-5 transition-colors motion-reduce:transition-none hover:border-aura-olive focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-aura-olive">
+                <span class="flex h-9 w-9 items-center justify-center rounded bg-aura-olive text-white">
+                    <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M12 4.5c-1.6 0-2.6.9-4 .9-1.6 0-3-1-4.3.3C2.3 7 2.6 9.6 3.3 12.6c.4 1.7.6 3.4 1 5 .4 1.7 1 2.9 2 2.9 1.3 0 1.7-1.7 2-3.4.3-1.6.6-3 1.7-3s1.4 1.4 1.7 3c.3 1.7.7 3.4 2 3.4 1 0 1.6-1.2 2-2.9.4-1.6.6-3.3 1-5 .7-3 1-5.6-.4-6.9-1.3-1.3-2.7-.3-4.3-.3-1.4 0-2.4-.9-4-.9Z"/>
+                    </svg>
+                </span>
+                <span class="mt-3 flex items-center gap-2">
+                    <span class="font-medium text-aura-gray-dark">Odontograma</span>
+                    <svg class="h-4 w-4 text-aura-gray transition-transform motion-reduce:transition-none group-hover:translate-x-0.5 group-hover:text-aura-olive" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14m-6-6 6 6-6 6"/>
+                    </svg>
+                </span>
+                <span class="mt-1 block text-sm text-aura-gray">
+                    Estado por diente y superficie en notación FDI, con historial. Se abre desde la ficha de cada paciente.
+                </span>
+            </a>
+
             @foreach ([
-                ['name' => 'Odontograma', 'desc' => 'Estado por diente en notación FDI, con nota por pieza.'],
                 ['name' => 'Consentimientos', 'desc' => 'Formatos informados con procedimientos, costos y firma digital.'],
                 ['name' => 'Hoja de evolución', 'desc' => 'Procedimientos, materiales y costos registrados por cita.'],
                 ['name' => 'Carga de archivos', 'desc' => 'Radiografías, fotografías y documentos del expediente.'],
