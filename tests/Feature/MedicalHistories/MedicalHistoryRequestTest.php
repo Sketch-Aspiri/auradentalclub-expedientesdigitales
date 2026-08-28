@@ -34,6 +34,27 @@ test('guarda la historia clínica con datos válidos', function () {
     $this->assertDatabaseHas('medical_histories', ['patient_id' => $this->patient->id]);
 });
 
+test('guarda la autopercepción de salud y el último examen médico', function () {
+    $this->put(route('patients.medical-history.update', $this->patient), [
+        ...$this->validPayload,
+        'general_health_rating' => 'regular',
+        'last_medical_exam' => 'Hace un año',
+    ])->assertRedirect();
+
+    $this->assertDatabaseHas('medical_histories', [
+        'patient_id' => $this->patient->id,
+        'general_health_rating' => 'regular',
+        'last_medical_exam' => 'Hace un año',
+    ]);
+});
+
+test('rechaza una autopercepción de salud fuera del catálogo', function () {
+    $this->put(route('patients.medical-history.update', $this->patient), [
+        ...$this->validPayload,
+        'general_health_rating' => 'excelentisima',
+    ])->assertSessionHasErrors('general_health_rating');
+});
+
 test('rechaza un valor no booleano en un antecedente patológico', function () {
     // Act
     $response = $this->put(

@@ -100,7 +100,7 @@ Abre `http://localhost:8081` e inicia sesión:
 | 2 | [Historia clínica / anamnesis](sprint-02-historia-clinica.md) | 1 | Completado |
 | 3 | [Consultas](sprint-03-consultas.md) | 1, 2 | Completado |
 | 4 | [Odontograma digital interactivo](sprint-04-odontograma.md) | 1 | Completado |
-| 5 | [Consentimientos informados](sprint-05-consentimientos.md) | 1, 2 | No iniciado |
+| 5 | [Consentimientos informados](sprint-05-consentimientos.md) | 1, 2 | En progreso |
 | 6 | [Hoja de evolución y control (costos)](sprint-06-evolucion-costos.md) | 1, 3 | No iniciado |
 | 7 | [Carga de archivos](sprint-07-archivos.md) | 1 (y opcionalmente 3) | No iniciado |
 | 8 | [Auditoría, seguridad y cumplimiento NOM](sprint-08-auditoria-seguridad.md) | 1–7 | No iniciado |
@@ -124,4 +124,13 @@ Estados válidos: `No iniciado` · `En progreso` · `Bloqueado` · `Completado`.
 - **7 (Archivos)** puede empezar en paralelo a 3 una vez que 1 esté listo, ya que `patient_files.consultation_id` es nullable (`CLAUDE.md` §6).
 - **10 (Dashboard: actividad reciente)** es una mejora de la pantalla de inicio, prioridad baja, no bloquea nada. El rediseño visual del dashboard (banner, rejilla de módulos, navegación móvil) ya se hizo el 2026-08-27; falta conectar la sección "Actividad reciente" a datos reales, lo cual necesita confirmación del cliente sobre alcance y nivel de detalle (PHI) antes de implementar.
 - **Timezone de la app** fijado en `America/Cancun` (UTC-5, sin horario de verano) el 2026-08-27 — `config/app.php` con fallback `env('APP_TIMEZONE', ...)`. Todas las fechas mostradas y `diffForHumans` usan esta zona.
+- **Sprint 5 (Consentimientos) en progreso** (2026-08-28): hoja digital del consentimiento
+  informado calcada del formato físico real de la clínica. Datos del paciente autollenados,
+  cuestionario de salud copiado de la historia clínica como foto fija (`consents.health_snapshot`),
+  campos del médico (plan/pronóstico/riesgos/alternativas), firmas digitales (`signature_pad`,
+  disco privado), hoja membretada para imprimir con el texto normativo transcrito. **`consent_procedures`
+  NO se implementó** — procedimientos y costos irán en el Sprint 6 (Hoja de evolución) y se
+  vincularán. La historia clínica (Sprint 2) ganó `general_health_rating` + `last_medical_exam`.
+  Módulo propio: tarjeta en el dashboard + barra lateral + pantalla global. Falta `/review` formal,
+  `securrity-auditor`, y el vínculo con el Sprint 6.
 - **8 y 9 nunca se saltan** — son los gates de "esto toca datos clínicos reales" antes de que la clínica use el sistema en producción.

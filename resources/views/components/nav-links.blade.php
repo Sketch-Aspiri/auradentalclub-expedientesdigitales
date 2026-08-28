@@ -1,8 +1,11 @@
 @php
     $link = 'flex items-center gap-3 rounded px-3 py-2 text-sm transition-colors motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-aura-olive';
     $isDashboard = request()->routeIs('dashboard');
-    $isPatients = request()->routeIs('patients.*', 'consultations.*') && ! request()->routeIs('patients.odontogram');
+    $isConsents = request()->routeIs('consents.*', 'patients.consents.*');
     $isOdontogram = request()->routeIs('odontogram', 'patients.odontogram');
+    $isPatients = request()->routeIs('patients.*', 'consultations.*')
+        && ! request()->routeIs('patients.odontogram')
+        && ! $isConsents;
 @endphp
 
 <div class="space-y-1">
@@ -31,6 +34,13 @@
             <path d="M12 4.5c-1.6 0-2.6.9-4 .9-1.6 0-3-1-4.3.3C2.3 7 2.6 9.6 3.3 12.6c.4 1.7.6 3.4 1 5 .4 1.7 1 2.9 2 2.9 1.3 0 1.7-1.7 2-3.4.3-1.6.6-3 1.7-3s1.4 1.4 1.7 3c.3 1.7.7 3.4 2 3.4 1 0 1.6-1.2 2-2.9.4-1.6.6-3.3 1-5 .7-3 1-5.6-.4-6.9-1.3-1.3-2.7-.3-4.3-.3-1.4 0-2.4-.9-4-.9Z"/>
         </svg>
         Odontograma
+    </a>
+
+    <a href="{{ route('consents.browse') }}"
+       @class([$link, 'bg-aura-olive text-white' => $isConsents, 'text-aura-gray-dark hover:bg-aura-cream' => ! $isConsents])
+       @if ($isConsents) aria-current="page" @endif>
+        <x-icon name="document-check" class="h-5 w-5 shrink-0" />
+        Consentimientos
     </a>
 
     @if (auth()->user()?->isSuperadmin())

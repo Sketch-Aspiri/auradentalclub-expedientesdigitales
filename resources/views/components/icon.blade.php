@@ -19,6 +19,26 @@
             'strokeWidth' => '1.5',
             'paths' => '<path stroke-linecap="round" stroke-linejoin="round" d="M9 4.5h6a1 1 0 0 1 1 1V6h1.5A1.5 1.5 0 0 1 19 7.5v11a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 5 18.5v-11A1.5 1.5 0 0 1 6.5 6H8v-.5a1 1 0 0 1 1-1Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6M9 15.5h4"/>',
         ],
+        'document-check' => [
+            'viewBox' => '0 0 24 24',
+            'strokeWidth' => '1.5',
+            'paths' => '<path stroke-linecap="round" stroke-linejoin="round" d="M14 4H7.5A1.5 1.5 0 0 0 6 5.5v13A1.5 1.5 0 0 0 7.5 20h9a1.5 1.5 0 0 0 1.5-1.5V8l-4-4Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4v4H18M9.5 14l2 2 3.5-4"/>',
+        ],
+        'printer' => [
+            'viewBox' => '0 0 24 24',
+            'strokeWidth' => '1.5',
+            'paths' => '<path stroke-linecap="round" stroke-linejoin="round" d="M7 8V4h10v4M7 16H5a1 1 0 0 1-1-1v-5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v5a1 1 0 0 1-1 1h-2M7 13h10v7H7z"/>',
+        ],
+        'signature' => [
+            'viewBox' => '0 0 24 24',
+            'strokeWidth' => '1.5',
+            'paths' => '<path stroke-linecap="round" stroke-linejoin="round" d="M3 17.5c2 0 2-4 3.5-4s1 3 2.5 3 2-6 3.5-6 1.5 4 3 4 2-1.5 3.5-1.5M3 20.5h18"/>',
+        ],
+        'x-circle' => [
+            'viewBox' => '0 0 24 24',
+            'strokeWidth' => '1.5',
+            'paths' => '<path stroke-linecap="round" stroke-linejoin="round" d="M9.5 9.5l5 5m0-5-5 5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>',
+        ],
         'calendar' => [
             'viewBox' => '0 0 24 24',
             'strokeWidth' => '1.5',

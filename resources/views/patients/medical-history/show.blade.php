@@ -91,6 +91,23 @@
                     </dl>
                 </section>
 
+                <section aria-labelledby="general-health-heading" class="rounded-lg border border-aura-gray-light bg-white p-6">
+                    <h2 id="general-health-heading" class="mb-4 flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-aura-gray-dark">
+                        <span class="h-3 w-0.5 bg-aura-olive" aria-hidden="true"></span>
+                        Estado de salud general
+                    </h2>
+                    <dl class="grid grid-cols-1 gap-4 text-sm sm:grid-cols-2">
+                        <div>
+                            <dt class="mb-1 text-xs text-aura-gray">¿Cómo describiría su salud?</dt>
+                            <dd class="text-aura-gray-dark">{{ $medicalHistory->general_health_rating?->label() ?? '—' }}</dd>
+                        </div>
+                        <div>
+                            <dt class="mb-1 text-xs text-aura-gray">Último examen médico</dt>
+                            <dd class="text-aura-gray-dark">{{ $medicalHistory->last_medical_exam ?: '—' }}</dd>
+                        </div>
+                    </dl>
+                </section>
+
                 <section aria-labelledby="non-pathological-heading" class="rounded-lg border border-aura-gray-light bg-white p-6">
                     <h2 id="non-pathological-heading" class="mb-4 flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-aura-gray-dark">
                         <span class="h-3 w-0.5 bg-aura-olive" aria-hidden="true"></span>

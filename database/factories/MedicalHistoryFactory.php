@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\GeneralHealthRating;
 use App\Models\MedicalHistory;
 use App\Models\Patient;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -26,6 +27,8 @@ class MedicalHistoryFactory extends Factory
             'has_hiv_hepatitis' => false,
             'has_coagulation_problems' => false,
             'has_seizures' => false,
+            'general_health_rating' => fake()->randomElement(GeneralHealthRating::cases()),
+            'last_medical_exam' => fake()->randomElement(['Hace 6 meses', 'Hace un año', 'Nunca', null]),
             'allergies' => fake()->boolean(30) ? 'Penicilina' : null,
             'current_medications' => null,
             'has_been_hospitalized_or_operated' => false,

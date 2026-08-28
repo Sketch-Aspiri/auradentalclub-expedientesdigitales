@@ -1,4 +1,6 @@
 @php
+    use App\Enums\GeneralHealthRating;
+
     $checkbox = function (string $field, string $label) use ($medicalHistory) {
         return [
             'field' => $field,
@@ -6,6 +8,8 @@
             'checked' => old($field, $medicalHistory->{$field}),
         ];
     };
+
+    $currentHealthRating = old('general_health_rating', $medicalHistory->general_health_rating?->value);
 @endphp
 
 {{-- El nombre del paciente no va en el <title> del navegador (historial, pestañas, screen-share): CLAUDE.md §5. --}}
@@ -86,6 +90,32 @@
                         @error('hospitalization_details')
                             <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
                         @enderror
+                    </div>
+                </div>
+            </section>
+
+            <section class="bg-white border border-aura-gray-light rounded-lg p-6">
+                <h2 class="text-sm font-semibold text-aura-gray-dark mb-4">Estado de salud general</h2>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label for="general_health_rating" class="block text-sm text-aura-gray-dark mb-1">¿Cómo describiría su salud?</label>
+                        <select id="general_health_rating" name="general_health_rating"
+                                class="w-full rounded border border-aura-gray-light px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-aura-olive">
+                            <option value="">No especificado</option>
+                            @foreach (GeneralHealthRating::cases() as $rating)
+                                <option value="{{ $rating->value }}" @selected($currentHealthRating === $rating->value)>{{ $rating->label() }}</option>
+                            @endforeach
+                        </select>
+                        @error('general_health_rating') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                    </div>
+                    <div>
+                        <label for="last_medical_exam" class="block text-sm text-aura-gray-dark mb-1">¿Cuándo fue su último examen médico?</label>
+                        <input id="last_medical_exam" type="text" name="last_medical_exam" maxlength="255"
+                               placeholder="Hace 6 meses, enero 2026, nunca..."
+                               value="{{ old('last_medical_exam', $medicalHistory->last_medical_exam) }}"
+                               class="w-full rounded border border-aura-gray-light px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-aura-olive">
+                        @error('last_medical_exam') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                     </div>
                 </div>
             </section>

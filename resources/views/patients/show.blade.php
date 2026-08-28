@@ -48,6 +48,12 @@
                     </x-icon-action>
                 @endcan
 
+                @can('viewAny', App\Models\Consent::class)
+                    <x-icon-action :href="route('patients.consents.index', $patient)" label="Consentimientos">
+                        <x-icon name="document-check" />
+                    </x-icon-action>
+                @endcan
+
                 @canany(['update', 'delete'], $patient)
                     <span class="mx-1 h-6 w-px bg-aura-gray-light" aria-hidden="true"></span>
                 @endcanany

@@ -2,9 +2,11 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\GeneralHealthRating;
 use App\Models\MedicalHistory;
 use App\Models\Patient;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class MedicalHistoryRequest extends FormRequest
 {
@@ -31,6 +33,8 @@ class MedicalHistoryRequest extends FormRequest
             'has_hiv_hepatitis' => ['required', 'boolean'],
             'has_coagulation_problems' => ['required', 'boolean'],
             'has_seizures' => ['required', 'boolean'],
+            'general_health_rating' => ['nullable', Rule::enum(GeneralHealthRating::class)],
+            'last_medical_exam' => ['nullable', 'string', 'max:255'],
             'allergies' => ['nullable', 'string', 'max:2000'],
             'current_medications' => ['nullable', 'string', 'max:2000'],
             'has_been_hospitalized_or_operated' => ['required', 'boolean'],

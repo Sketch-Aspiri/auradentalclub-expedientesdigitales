@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Models\Concerns\Auditable;
 use App\Support\PatientPhoto;
+use App\Support\SignatureImage;
 use Carbon\Carbon;
 use Database\Factories\PatientFactory;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -50,6 +51,14 @@ class Patient extends Model
         static::forceDeleting(function (Patient $patient) {
             $patient->consultations()->withTrashed()->get()->each->forceDelete();
             $patient->odontogramRecords()->withTrashed()->get()->each->forceDelete();
+
+            $patient->consents()->withTrashed()->get()->each(function (Consent $consent) {
+                foreach ($consent->signaturePaths() as $path) {
+                    SignatureImage::delete($path);
+                }
+                $consent->forceDelete();
+            });
+
             $patient->medicalHistory?->delete();
             PatientPhoto::delete($patient->photo_path);
         });
@@ -113,5 +122,10 @@ class Patient extends Model
     public function odontogramRecords(): HasMany
     {
         return $this->hasMany(OdontogramRecord::class);
+    }
+
+    public function consents(): HasMany
+    {
+        return $this->hasMany(Consent::class);
     }
 }

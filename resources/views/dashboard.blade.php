@@ -53,6 +53,24 @@
                 </span>
             </a>
 
+            {{-- Pendiente (Sprint 11, sprints/sprint-11-citas.md): mismo patrón visual que el
+                 @foreach de abajo, pero insertada aquí a mano para que quede entre Pacientes y
+                 Odontograma, como ya se decidió con el cliente para cuando el módulo exista. --}}
+            <div class="rounded-lg border border-dashed border-aura-gray-light bg-white p-5" aria-disabled="true">
+                <span class="flex h-9 w-9 items-center justify-center rounded border border-aura-gray-light text-aura-gray">
+                    <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M7 10V7a5 5 0 0 1 10 0v3M5 10h14v10H5z"/>
+                    </svg>
+                </span>
+                <span class="mt-3 flex flex-wrap items-center gap-2">
+                    <span class="font-medium text-aura-gray-dark">Agenda</span>
+                    <span class="rounded-full bg-aura-cream px-2 py-0.5 text-[11px] font-medium uppercase tracking-wide text-aura-gray-dark">
+                        Próximamente
+                    </span>
+                </span>
+                <span class="mt-1 block text-sm text-aura-gray">Calendario para agendar citas a pacientes existentes.</span>
+            </div>
+
             <a href="{{ route('odontogram') }}"
                class="group rounded-lg border border-aura-gray-light bg-white p-5 transition-colors motion-reduce:transition-none hover:border-aura-olive focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-aura-olive">
                 <span class="flex h-9 w-9 items-center justify-center rounded bg-aura-olive text-white">
@@ -71,8 +89,23 @@
                 </span>
             </a>
 
+            <a href="{{ route('consents.browse') }}"
+               class="group rounded-lg border border-aura-gray-light bg-white p-5 transition-colors motion-reduce:transition-none hover:border-aura-olive focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-aura-olive">
+                <span class="flex h-9 w-9 items-center justify-center rounded bg-aura-olive text-white">
+                    <x-icon name="document-check" class="h-5 w-5" />
+                </span>
+                <span class="mt-3 flex items-center gap-2">
+                    <span class="font-medium text-aura-gray-dark">Consentimientos</span>
+                    <svg class="h-4 w-4 text-aura-gray transition-transform motion-reduce:transition-none group-hover:translate-x-0.5 group-hover:text-aura-olive" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14m-6-6 6 6-6 6"/>
+                    </svg>
+                </span>
+                <span class="mt-1 block text-sm text-aura-gray">
+                    Consentimientos informados por paciente: datos, firmas digitales y hoja membretada para imprimir.
+                </span>
+            </a>
+
             @foreach ([
-                ['name' => 'Consentimientos', 'desc' => 'Formatos informados con procedimientos, costos y firma digital.'],
                 ['name' => 'Hoja de evolución', 'desc' => 'Procedimientos, materiales y costos registrados por cita.'],
                 ['name' => 'Carga de archivos', 'desc' => 'Radiografías, fotografías y documentos del expediente.'],
             ] as $module)

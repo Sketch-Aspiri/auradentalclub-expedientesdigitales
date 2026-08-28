@@ -60,6 +60,16 @@ trait Auditable
     }
 
     /**
+     * Registra un evento de auditoría con una acción arbitraria del enum audit_logs.action
+     * (p. ej. `signed` / `voided` de un consentimiento). Para acciones que no son eventos de
+     * Eloquent y que el modelo dispara explícitamente desde su propia lógica de dominio.
+     */
+    public function logAudit(string $action): void
+    {
+        $this->recordAuditEvent($action);
+    }
+
+    /**
      * Registra un evento `viewed` a lo sumo una vez por usuario / registro / día. Pensado
      * para accesos de alta frecuencia donde `recordView()` inundaría la tabla — p. ej. la
      * foto de identificación del paciente, que se pide en cada fila de un listado. Conserva

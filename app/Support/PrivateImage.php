@@ -25,6 +25,9 @@ final class PrivateImage
     /** Lado máximo del JPEG resultante; una foto de identificación no necesita más. */
     private const MAX_SIDE = 1200;
 
+    /** Lado máximo aceptado en la imagen de entrada — rechaza bombas de dimensiones antes de GD. */
+    private const MAX_INPUT_SIDE = 12000;
+
     private const JPEG_QUALITY = 82;
 
     public static function store(
@@ -58,6 +61,11 @@ final class PrivateImage
         $image = @imagecreatefromstring((string) file_get_contents($file->getRealPath()));
 
         if (! $image instanceof GdImage) {
+            throw ValidationException::withMessages([$errorField => $errorMessage]);
+        }
+
+        if (imagesx($image) > self::MAX_INPUT_SIDE || imagesy($image) > self::MAX_INPUT_SIDE) {
+            imagedestroy($image);
             throw ValidationException::withMessages([$errorField => $errorMessage]);
         }
 

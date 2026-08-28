@@ -1,15 +1,19 @@
 <?php
 
 use App\Enums\UserRole;
+use App\Models\Consent;
 use App\Models\Consultation;
 use App\Models\MedicalHistory;
 use App\Models\OdontogramRecord;
 use App\Models\Patient;
 use App\Models\User;
+use App\Support\SignatureImage;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 test('el borrado permanente de un paciente purga sus registros clínicos y audita cada uno', function () {
     // Arrange
+    Storage::fake('local');
     $superadmin = User::factory()->role(UserRole::Superadmin)->create();
     $this->actingAs($superadmin);
     $patient = Patient::factory()->create();
@@ -18,6 +22,12 @@ test('el borrado permanente de un paciente purga sus registros clínicos y audit
     $trashedConsultation = Consultation::factory()->for($patient)->create();
     $trashedConsultation->delete();
     $odontogramRecord = OdontogramRecord::factory()->for($patient)->create();
+
+    $activeConsent = Consent::factory()->for($patient)->create();
+    $signaturePath = SignatureImage::store(fakeSignatureDataUrl(), "consents/{$activeConsent->id}/signatures");
+    $activeConsent->forceFill(['signed_at' => now(), 'patient_signature_path' => $signaturePath])->save();
+    $trashedConsent = Consent::factory()->for($patient)->create();
+    $trashedConsent->delete();
 
     // Act
     $patient->forceDelete();
@@ -28,6 +38,9 @@ test('el borrado permanente de un paciente purga sus registros clínicos y audit
     $this->assertDatabaseMissing('consultations', ['id' => $activeConsultation->id]);
     $this->assertDatabaseMissing('consultations', ['id' => $trashedConsultation->id]);
     $this->assertDatabaseMissing('odontogram_records', ['id' => $odontogramRecord->id]);
+    $this->assertDatabaseMissing('consents', ['id' => $activeConsent->id]);
+    $this->assertDatabaseMissing('consents', ['id' => $trashedConsent->id]);
+    expect(SignatureImage::exists($signaturePath))->toBeFalse();
 
     // Assert — cada purga quedó registrada en audit_logs con el patient_id correcto
     foreach ([
@@ -36,6 +49,8 @@ test('el borrado permanente de un paciente purga sus registros clínicos y audit
         [Consultation::class, $activeConsultation->id],
         [Consultation::class, $trashedConsultation->id],
         [OdontogramRecord::class, $odontogramRecord->id],
+        [Consent::class, $activeConsent->id],
+        [Consent::class, $trashedConsent->id],
     ] as [$type, $id]) {
         $this->assertDatabaseHas('audit_logs', [
             'user_id' => $superadmin->id,

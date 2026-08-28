@@ -1,6 +1,7 @@
 import './bootstrap';
 import { initNavigationOverlay } from './nav-loader';
 import { initButtonLoading } from './button-loader';
+import { initSignatureCanvas } from './signature-canvas';
 
 // Los dos mecanismos de feedback de carga del sistema (CLAUDE.md §10 /
 // .claude/agents/ux-ui-designer.md "Feedback de carga"). Vite empaqueta este script como
@@ -8,3 +9,4 @@ import { initButtonLoading } from './button-loader';
 // se ejecuta este código — no hace falta esperar a `DOMContentLoaded`.
 initNavigationOverlay();
 initButtonLoading();
+initSignatureCanvas();

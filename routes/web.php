@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\ConsentController;
+use App\Http\Controllers\ConsentSignatureController;
 use App\Http\Controllers\ConsultationController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\OdontogramController;
@@ -47,4 +49,18 @@ Route::middleware('auth')->group(function () {
     Route::put('consultations/{consultation}/restore', [ConsultationController::class, 'restore'])
         ->withTrashed()
         ->name('consultations.restore');
+
+    Route::get('consents', [ConsentController::class, 'browse'])->name('consents.browse');
+    Route::resource('patients.consents', ConsentController::class)->shallow();
+    Route::put('consents/{consent}/restore', [ConsentController::class, 'restore'])
+        ->withTrashed()
+        ->name('consents.restore');
+    Route::get('consents/{consent}/sign', [ConsentController::class, 'sign'])->name('consents.sign');
+    Route::put('consents/{consent}/void', [ConsentController::class, 'void'])->name('consents.void');
+    Route::get('consents/{consent}/print', [ConsentController::class, 'print'])->name('consents.print');
+    // Sirve un binario (firma) del disco privado: se limita el ritmo por si alguien intenta
+    // descargar en masa las firmas de todos los consentimientos.
+    Route::get('consents/{consent}/signatures/{party}', ConsentSignatureController::class)
+        ->middleware('throttle:300,1')
+        ->name('consents.signature');
 });
