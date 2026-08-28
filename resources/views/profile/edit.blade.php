@@ -89,10 +89,9 @@
                 </div>
 
                 <div class="pt-2">
-                    <button type="submit"
-                            class="rounded bg-aura-olive px-4 py-2 text-sm font-medium text-white transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-aura-olive focus-visible:ring-offset-2">
+                    <x-button type="submit" variant="primary">
                         Guardar datos
-                    </button>
+                    </x-button>
                 </div>
             </form>
         </section>
@@ -131,10 +130,9 @@
                 </div>
 
                 <div class="pt-2">
-                    <button type="submit"
-                            class="rounded bg-aura-olive px-4 py-2 text-sm font-medium text-white transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-aura-olive focus-visible:ring-offset-2">
+                    <x-button type="submit" variant="primary">
                         Cambiar contraseña
-                    </button>
+                    </x-button>
                 </div>
             </form>
         </section>

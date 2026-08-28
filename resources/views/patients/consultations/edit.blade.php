@@ -13,10 +13,9 @@
             @include('patients.consultations._form')
 
             <div class="flex items-center gap-3">
-                <button type="submit"
-                        class="bg-aura-olive text-white rounded px-4 py-2 text-sm font-medium hover:opacity-90">
+                <x-button type="submit" variant="primary">
                     Guardar cambios
-                </button>
+                </x-button>
                 <a href="{{ route('consultations.show', $consultation) }}" class="text-sm text-aura-gray hover:text-aura-gray-dark">
                     Cancelar
                 </a>

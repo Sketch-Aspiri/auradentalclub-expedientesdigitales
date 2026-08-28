@@ -30,9 +30,8 @@
                    class="w-full rounded border border-aura-gray-light px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-aura-olive">
         </div>
 
-        <button type="submit"
-                class="w-full bg-aura-olive text-white rounded py-2 text-sm font-medium hover:opacity-90">
+        <x-button type="submit" variant="primary" class="w-full">
             Restablecer contraseña
-        </button>
+        </x-button>
     </form>
 </x-guest-layout>

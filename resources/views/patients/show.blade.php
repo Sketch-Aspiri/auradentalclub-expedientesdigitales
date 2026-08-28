@@ -4,6 +4,7 @@
         class="space-y-8"
         x-data="{
             confirmDelete: false,
+            deleting: false,
             closeConfirmDelete() {
                 this.confirmDelete = false;
                 this.$nextTick(() => this.$refs.deleteTrigger?.focus());
@@ -30,7 +31,7 @@
 
             <div class="flex flex-wrap items-center gap-1" role="group" aria-label="Secciones y acciones del expediente">
                 @can('viewAny', App\Models\MedicalHistory::class)
-                    <x-icon-action :href="route('patients.medical-history.edit', $patient)" label="Historia clínica">
+                    <x-icon-action :href="route('patients.medical-history.show', $patient)" label="Historia clínica">
                         <x-icon name="clipboard" />
                     </x-icon-action>
                 @endcan
@@ -160,18 +161,22 @@
                     Quedará archivado y se podrá restaurar desde «Ver archivados».
                 </p>
                 <div class="mt-5 flex justify-end gap-2">
-                    <button type="button" x-ref="confirmModalCancel"
-                            @click="closeConfirmDelete()"
-                            @keydown.tab.prevent="$refs.confirmModalConfirm.focus()"
-                            class="min-h-11 rounded-md border border-aura-gray-light px-3 py-2 text-sm text-aura-gray-dark transition-colors motion-reduce:transition-none hover:bg-aura-cream focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-aura-olive">
+                    <x-button type="button" variant="secondary" x-ref="confirmModalCancel"
+                              @click="closeConfirmDelete()"
+                              @keydown.tab.prevent="$refs.confirmModalConfirm.focus()">
                         Cancelar
-                    </button>
-                    <button type="button" x-ref="confirmModalConfirm"
-                            @click="$refs.deleteForm.requestSubmit()"
-                            @keydown.tab.prevent="$refs.confirmModalCancel.focus()"
-                            class="min-h-11 rounded-md bg-red-700 px-3 py-2 text-sm font-medium text-white transition-colors motion-reduce:transition-none hover:bg-red-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-700 focus-visible:ring-offset-2">
+                    </x-button>
+                    {{-- Este botón es el "submitter" visible de un <form> distinto y oculto
+                         (x-ref="deleteForm", sin botones propios) — button-loader.js no puede
+                         detectarlo automáticamente (SubmitEvent.submitter llega vacío en un
+                         requestSubmit() sin argumento), así que usa el mecanismo 3 de
+                         <x-button> (alpine-loading) en vez del automático. --}}
+                    <x-button type="button" variant="danger" x-ref="confirmModalConfirm"
+                              alpine-loading="deleting" loading-text="Eliminando…"
+                              @click="deleting = true; $refs.deleteForm.requestSubmit()"
+                              @keydown.tab.prevent="$refs.confirmModalCancel.focus()">
                         Eliminar
-                    </button>
+                    </x-button>
                 </div>
             </x-confirm-modal>
         @endcan

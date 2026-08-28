@@ -39,8 +39,9 @@ Usa Laravel Policies/Gates (o un paquete como `spatie/laravel-permission` si se 
 6. **Hoja de evolución y control (con costos)** — bitácora por cita de procedimiento realizado, materiales/insumos usados, costo, monto pagado ("a cuenta") y saldo. Vive dentro de este sistema, no es un módulo de facturación aparte.
 7. **Carga de archivos** — radiografías, fotos, documentos, asociados al expediente o a una consulta específica.
 8. **Alergias y antecedentes médicos** — parte de la historia clínica (punto 2).
+9. **Agenda de citas** — calendario para agendar consultas a pacientes ya existentes (paciente, doctor, fecha/hora, duración, motivo, estado). Decisión confirmada con el cliente el 2026-08-28 (ver `sprints/sprint-11-citas.md`): a diferencia de lo que decía antes esta sección, la agenda **sí vive en este sistema**, no en uno aparte. El esquema queda preparado para sincronizarse con el futuro sistema «Citas en Línea» del dominio (`uuid`, `source`, `external_id`), pero sin API, webhooks ni autenticación entre sistemas todavía — eso se confirma aparte cuando ese sistema exista (ver §12).
 
-No implementes funcionalidad de citas o inventario en este proyecto — eso vive en sistemas separados. El manejo de saldos aquí es informativo/registro por cita, no un módulo contable completo (sin cortes de caja, facturación fiscal, etc.) salvo que se indique lo contrario.
+No implementes funcionalidad de inventario en este proyecto — eso vive en un sistema separado. El manejo de saldos aquí es informativo/registro por cita, no un módulo contable completo (sin cortes de caja, facturación fiscal, etc.) salvo que se indique lo contrario.
 
 ## 5. Datos sensibles y seguridad (requisito importante)
 
@@ -202,7 +203,8 @@ Reglas complementarias en `.claude/rules/`: `code-style.md` (convenciones de có
 ## 12. Fuera de alcance (por ahora)
 
 - Soporte multi-sucursal.
-- Autenticación o base de datos compartida con los sistemas de Citas o Inventarios.
+- Autenticación o base de datos compartida con el sistema de Inventarios.
+- Sincronización real (API, webhooks) con el futuro sistema «Citas en Línea» — la agenda local de este sistema (§4.9) ya existe y queda preparada para esa sincronización, pero el transporte no se construye hasta que ese sistema exista y se confirme el enfoque (`.claude/rules/api-conventios.md`, sección "Si en el futuro se agrega una API JSON real").
 - Integraciones de facturación o pagos.
 
 ## 13. Cuando algo no esté claro

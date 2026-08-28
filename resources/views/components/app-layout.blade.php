@@ -65,7 +65,7 @@
             </div>
 
             <div class="shrink-0 border-t border-aura-gray-light px-6 py-4">
-                <x-user-menu />
+                <x-user-menu :identity="false" />
             </div>
         </aside>
 
@@ -75,6 +75,10 @@
                  `<main>`, pero por debajo del panel del menú de usuario (z-40, definido en
                  `x-user-dropdown`) y de cualquier modal de confirmación (usar z-50+). No compite
                  con el encabezado móvil (z-30): son mutuamente excluyentes vía `md:block`/`md:hidden`. --}}
+            {{-- Esquema de z-index del shell (de menor a mayor): header sticky de escritorio
+                 z-20 → header móvil z-30 → panel del menú de usuario (x-user-dropdown) z-40 →
+                 overlay de navegación / modales de confirmación z-50+. Cada capa nueva debe
+                 quedar documentada aquí para no pisar a las anteriores por accidente. --}}
             <header class="hidden border-b border-aura-gray-light bg-white px-6 py-3 md:sticky md:top-0 md:z-20 md:block md:px-12">
                 <div class="mx-auto flex max-w-5xl items-center justify-end">
                     <x-user-dropdown />
@@ -118,6 +122,50 @@
             });
         })();
     </script>
+
+    {{--
+        Overlay de navegación (isotipo de Aura) — mecanismo de feedback de carga #1
+        (CLAUDE.md §10 / .claude/agents/ux-ui-designer.md "Feedback de carga"). La lógica
+        vive en resources/js/nav-loader.js (cargado vía app.js): retardo de ~200ms antes
+        de mostrarse, exclusiones (anclas, target=_blank, mailto/tel, download,
+        clic con modificadores, wire:submit), reset en `pageshow` (bfcache) y timeout de
+        seguridad de 10s para que nunca quede colgado.
+
+        z-50: por encima del header móvil (z-30), el header sticky de escritorio (z-20) y
+        el panel del menú de usuario (z-40) — ver el esquema de z-index comentado arriba,
+        junto al header de escritorio.
+
+        `pointer-events-none`: el overlay nunca atrapa clics ni el foco del teclado (si el
+        timeout de seguridad falla por lo que sea, la app sigue siendo usable debajo).
+        `role="status"`/`aria-live="polite"` + texto `sr-only`: se anuncia a lectores de
+        pantalla sin ser un diálogo modal. El isotipo usa una animación de opacidad sutil
+        (`animate-pulse`), nunca un spinner genérico girando; con `prefers-reduced-motion`
+        la regla global de app.css ya congela cualquier animación/transición de esta capa.
+    --}}
+    <div
+        id="nav-loading-overlay"
+        class="pointer-events-none invisible fixed inset-0 z-50 flex flex-col items-center justify-center gap-5 bg-aura-cream/95 opacity-0 transition-opacity duration-200 motion-reduce:transition-none"
+        role="status"
+        aria-live="polite"
+    >
+        {{-- El centrado depende de que `flex` esté SIEMPRE presente: se oculta con
+             `invisible` (visibility), no con `hidden` (display:none), porque alternar
+             display anula el centrado del flex y el isotipo se iría a la esquina. --}}
+        <img src="{{ asset('logos/monograma.png') }}" alt="" aria-hidden="true" width="2502" height="2466"
+             class="h-14 w-14">
+
+        {{-- Puntos de carga: el movimiento vive aquí, no en el isotipo (una marca que
+             late compite con los puntos y ensucia la pantalla). `aura-dot` se congela
+             sola con la regla global de `prefers-reduced-motion` de app.css. --}}
+        <div class="flex items-center gap-1.5" aria-hidden="true">
+            <span class="aura-dot h-1.5 w-1.5 rounded-full bg-aura-olive"></span>
+            <span class="aura-dot h-1.5 w-1.5 rounded-full bg-aura-olive"></span>
+            <span class="aura-dot h-1.5 w-1.5 rounded-full bg-aura-olive"></span>
+        </div>
+
+        <span class="sr-only">Cargando…</span>
+    </div>
+
     @livewireScripts
 </body>
 </html>

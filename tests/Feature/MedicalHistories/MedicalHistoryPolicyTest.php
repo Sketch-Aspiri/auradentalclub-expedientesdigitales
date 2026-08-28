@@ -23,6 +23,18 @@ test('un usuario de cualquier rol puede ver/crear el formulario de historia clí
     $response->assertOk();
 })->with('roles_con_acceso_completo');
 
+test('un usuario de cualquier rol puede ver la pantalla de consulta de la historia clínica', function (UserRole $role) {
+    // Arrange
+    $user = User::factory()->role($role)->create();
+    $patient = Patient::factory()->create();
+
+    // Act
+    $response = $this->actingAs($user)->get(route('patients.medical-history.show', $patient));
+
+    // Assert
+    $response->assertOk();
+})->with('roles_con_acceso_completo');
+
 test('un usuario de cualquier rol puede guardar la historia clínica', function (UserRole $role) {
     // Arrange
     $user = User::factory()->role($role)->create();
@@ -44,7 +56,7 @@ test('un usuario de cualquier rol puede guardar la historia clínica', function 
     ]);
 
     // Assert
-    $response->assertRedirect(route('patients.show', $patient));
+    $response->assertRedirect(route('patients.medical-history.show', $patient));
 })->with('roles_con_acceso_completo');
 
 test('un visitante no autenticado no puede ver la historia clínica', function () {
@@ -53,6 +65,17 @@ test('un visitante no autenticado no puede ver la historia clínica', function (
 
     // Act
     $response = $this->get(route('patients.medical-history.edit', $patient));
+
+    // Assert
+    $response->assertRedirect(route('login'));
+});
+
+test('un visitante no autenticado no puede ver la pantalla de consulta de la historia clínica', function () {
+    // Arrange
+    $patient = Patient::factory()->create();
+
+    // Act
+    $response = $this->get(route('patients.medical-history.show', $patient));
 
     // Assert
     $response->assertRedirect(route('login'));

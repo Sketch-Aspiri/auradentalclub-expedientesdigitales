@@ -30,7 +30,7 @@ test('guarda la historia clínica con datos válidos', function () {
     );
 
     // Assert
-    $response->assertRedirect(route('patients.show', $this->patient));
+    $response->assertRedirect(route('patients.medical-history.show', $this->patient));
     $this->assertDatabaseHas('medical_histories', ['patient_id' => $this->patient->id]);
 });
 

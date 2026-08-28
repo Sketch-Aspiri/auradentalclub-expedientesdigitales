@@ -20,8 +20,8 @@
                    class="rounded px-1 py-1 text-aura-gray-dark hover:text-aura-olive focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-aura-olive">
                     Ver expediente
                 </a>
-                <button type="button" wire:click="clearPatient"
-                        class="rounded px-1 py-1 text-aura-gray-dark hover:text-aura-olive focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-aura-olive">
+                <button type="button" wire:click="clearPatient" wire:target="clearPatient" wire:loading.attr="disabled"
+                        class="rounded px-1 py-1 text-aura-gray-dark hover:text-aura-olive focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-aura-olive disabled:cursor-not-allowed disabled:opacity-60">
                     Cambiar paciente
                 </button>
             </div>

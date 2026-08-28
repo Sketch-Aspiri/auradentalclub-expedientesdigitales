@@ -20,10 +20,9 @@
             @enderror
         </div>
 
-        <button type="submit"
-                class="w-full bg-aura-olive text-white rounded py-2 text-sm font-medium hover:opacity-90">
+        <x-button type="submit" variant="primary" class="w-full">
             Enviar enlace
-        </button>
+        </x-button>
 
         <p class="text-center text-sm">
             <a href="{{ route('login') }}" class="text-aura-gray hover:text-aura-gray-dark hover:underline">

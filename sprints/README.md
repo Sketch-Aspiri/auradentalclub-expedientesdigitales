@@ -106,6 +106,7 @@ Abre `http://localhost:8081` e inicia sesión:
 | 8 | [Auditoría, seguridad y cumplimiento NOM](sprint-08-auditoria-seguridad.md) | 1–7 | No iniciado |
 | 9 | [QA final, UAT y deploy a Hostinger](sprint-09-deploy-uat.md) | 8 | No iniciado |
 | 10 | [Dashboard: actividad reciente](sprint-10-dashboard-actividad.md) | 1, 3 | No iniciado |
+| 11 | [Agenda de citas](sprint-11-citas.md) | 1, 3 | No iniciado |
 
 Estados válidos: `No iniciado` · `En progreso` · `Bloqueado` · `Completado`. Actualiza esta tabla junto con el archivo del sprint.
 

@@ -70,6 +70,9 @@
 
             <x-icon-action
                 wire:click="toggleArchived"
+                wire:target="toggleArchived"
+                wire:loading.attr="disabled"
+                wire:loading.class="opacity-50"
                 :label="$archived ? 'Ver pacientes activos' : 'Ver archivados'"
             >
                 <x-icon :name="$archived ? 'chevron-left' : 'archive-box'" />
@@ -159,6 +162,9 @@
                                         @can('restore', $patient)
                                             <x-icon-action
                                                 wire:click="restore({{ $patient->id }})"
+                                                wire:target="restore({{ $patient->id }})"
+                                                wire:loading.attr="disabled"
+                                                wire:loading.class="opacity-50"
                                                 :label="'Restaurar el expediente de ' . $patient->full_name"
                                             >
                                                 <x-icon name="arrow-uturn-left" />

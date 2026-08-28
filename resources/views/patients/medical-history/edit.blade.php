@@ -10,12 +10,23 @@
 
 {{-- El nombre del paciente no va en el <title> del navegador (historial, pestañas, screen-share): CLAUDE.md §5. --}}
 <x-app-layout title="Historia clínica">
-    <div class="max-w-3xl">
-        <h1 class="text-lg font-medium mb-1">Historia clínica</h1>
-        <p class="text-sm text-aura-gray mb-6">{{ $patient->full_name }}</p>
+    <div class="max-w-3xl space-y-8">
+        <a href="{{ route('patients.medical-history.show', $patient) }}"
+           class="inline-flex min-h-11 items-center gap-1.5 rounded text-sm text-aura-gray-dark transition-colors motion-reduce:transition-none hover:text-aura-olive focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-aura-olive">
+            <x-icon name="chevron-left" class="h-4 w-4" />
+            Volver a la historia clínica
+        </a>
+
+        <div>
+            <h1 class="text-2xl font-light tracking-tight text-aura-gray-dark">Editar historia clínica</h1>
+            <p class="mt-1 text-sm text-aura-gray">{{ $patient->full_name }}</p>
+        </div>
 
         @if (session('status'))
-            <p class="mb-4 text-sm text-aura-olive">{{ session('status') }}</p>
+            <p class="flex items-start gap-2 rounded-md border border-aura-olive/30 bg-aura-olive/5 px-4 py-2.5 text-sm text-aura-olive" role="status">
+                <x-icon name="check" class="mt-0.5 h-4 w-4 shrink-0" />
+                <span>{{ session('status') }}</span>
+            </p>
         @endif
 
         <form method="POST" action="{{ route('patients.medical-history.update', $patient) }}" class="space-y-8">
@@ -158,11 +169,11 @@
             </section>
 
             <div class="flex items-center gap-3">
-                <button type="submit"
-                        class="bg-aura-olive text-white rounded px-4 py-2 text-sm font-medium hover:opacity-90">
+                <x-button type="submit" variant="primary" icon="check">
                     Guardar historia clínica
-                </button>
-                <a href="{{ route('patients.show', $patient) }}" class="text-sm text-aura-gray hover:text-aura-gray-dark">
+                </x-button>
+                <a href="{{ route('patients.medical-history.show', $patient) }}"
+                   class="inline-flex min-h-11 items-center rounded-md px-2 text-sm text-aura-gray transition-colors motion-reduce:transition-none hover:text-aura-gray-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-aura-olive">
                     Cancelar
                 </a>
             </div>

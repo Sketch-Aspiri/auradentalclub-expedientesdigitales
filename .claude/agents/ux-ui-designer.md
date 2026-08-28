@@ -190,6 +190,109 @@ Antes de construir una tabla nueva, abre `patient-list.blade.php` y copia su est
 literal (clases, orden de elementos, comentarios de decisión) en vez de recrearla desde
 cero — es la fuente de verdad del patrón, no solo un ejemplo.
 
+## Feedback de carga (norma para toda pantalla futura)
+
+Aprobado en sesión de desarrollo. Este sistema es multipágina clásica (Blade + navegación
+completa), con Livewire solo en `patient-list`, `odontogram` y `odontogram/browser`. Dos
+mecanismos cubren *toda* espera perceptible — no inventes un tercero por pantalla nueva.
+
+### 1. Overlay de navegación (isotipo)
+
+Toda navegación de página completa (clic en un `<a>` interno, o el `submit` de un `<form>`
+Blade clásico que no sea `wire:submit`) muestra un overlay a pantalla completa con el
+isotipo de Aura (`public/logos/monograma.png`) sobre `aura-cream/95`. Vive en
+`resources/views/components/app-layout.blade.php` (`#nav-loading-overlay`) y su lógica en
+`resources/js/nav-loader.js`, inicializada desde `resources/js/app.js`.
+
+Reglas duras de este mecanismo — no las relajes:
+
+- **Retardo de ~200ms antes de mostrarse.** Sin él, cada clic parpadea porque la mayoría de
+  las navegaciones de una app local terminan antes de eso.
+- **Exclusiones obligatorias**: anclas internas (`href="#..."`), `target="_blank"`,
+  `mailto:`/`tel:`/`javascript:`, enlaces con `download`, clics con
+  Ctrl/Cmd/Shift/Alt o botón central, `event.defaultPrevented`, enlaces a otro origen, y
+  cualquier `<form>` con un atributo `wire:submit*` (eso es Livewire, no navegación).
+- **`pageshow` siempre lo oculta** (cubre la vuelta por bfcache con el botón "atrás", donde
+  el overlay podría quedar visible tal cual estaba justo antes de navegar) y un **timeout de
+  seguridad de 10s** lo retira aunque la navegación nunca ocurra. Nunca debe quedarse
+  colgado tapando la pantalla.
+- **Caso crítico — rutas de descarga/visualización de archivo** (`patients.photo`,
+  `profile.photo`, y cualquier futura `patient-files.download`): esas rutas no navegan (o
+  disparan una descarga sin abandonar la página), así que un `<a href>` apuntando ahí sin
+  `download` quedaría "colgado" hasta el timeout de seguridad. Hoy todas se consumen vía
+  `<img src>` (nunca un `<a>` clicable), así que no se disparan. Si en el futuro agregas un
+  enlace clicable a una de estas rutas, ponle el atributo `download` (lo excluye por diseño)
+  o `data-no-nav-loading` — no dejes que dependa solo del timeout de 10s.
+- **Nunca interfiere con Livewire**: `wire:click`, `wire:model.live`, la paginación de
+  Livewire (`gotoPage`/`nextPage`) no son navegaciones y no deben mostrar este overlay —
+  para esas usa el mecanismo 2.
+- Accesibilidad: `role="status"` + `aria-live="polite"` en el contenedor, texto `sr-only`
+  ("Cargando…"), `pointer-events-none` (nunca atrapa clics ni foco). Animación sutil
+  (`animate-pulse` sobre el isotipo) — nunca un spinner genérico girando junto al logo. La
+  regla global de `prefers-reduced-motion` de `resources/css/app.css` ya congela esta capa;
+  no dupliques esa media query aquí.
+
+### 2. Loader de botones
+
+Todo botón que dispara una acción (submit de formulario o acción Livewire) da feedback
+inmediato — spinner/estado de carga + bloqueo de doble envío. `<x-button>`
+(`resources/views/components/button.blade.php`) es el componente **obligatorio** para
+cualquier botón de acción nuevo: no escribas `<button>` sueltos repitiendo a mano las
+clases de color/foco. Variantes: `primary` (acción principal, `bg-aura-olive`),
+`secondary` (borde neutro, ej. "Cancelar" de un modal), `danger` (rojo apagado, acciones
+destructivas). Acepta `icon` (catálogo `<x-icon>`) y `href` (renderiza `<a>` para la acción
+primaria que navega, sin loader propio — la cubre el overlay del punto 1).
+
+`<x-button>` resuelve el loader según qué prop le pases, y cada uno corresponde a un caso
+real del inventario del sistema:
+
+- **Submit de formulario Blade clásico** (la mayoría: login, alta/edición de paciente,
+  consulta, historia clínica, perfil): no pasas nada especial.
+  `resources/js/button-loader.js` detecta el `submit` global (vía `SubmitEvent.submitter`)
+  y activa el spinner/atenuación + `disabled` + `aria-busy="true"` en el botón exacto que
+  se pulsó, sin que tengas que tocar el controlador ni la ruta.
+- **Acción Livewire** (`wire:click`/`wire:submit`, ej. "Registrar hallazgo" del
+  odontograma): pasa `wire-target="nombreDeLaAccion"` (mismo valor que usarías en
+  `wire:target`). El componente usa `wire:loading.attr="disabled"` +
+  `wire:loading`/`wire:loading.remove` scopeados a ese target. Nota de accesibilidad:
+  Livewire solo admite **un** `wire:loading.attr` por elemento, así que en vez de forzar un
+  segundo para `aria-busy` (imposible sin duplicar el atributo), se anuncia con una región
+  `role="status" aria-live="polite"` oculta visualmente ("Cargando…") — es equivalente o
+  mejor que `aria-busy` para lectores de pantalla, y es el patrón que recomienda Livewire
+  para esto. No lo marques como hallazgo si lo ves en una revisión futura.
+- **Acción disparada por Alpine sin submitter propio** (ej. el botón "Eliminar" de un
+  `<x-confirm-modal>`, que hace `$refs.form.requestSubmit()` sobre un `<form>` oculto sin
+  botones dentro — `SubmitEvent.submitter` llega vacío ahí, el mecanismo automático no
+  puede detectarlo): pasa `alpine-loading="miVariable"` + pon esa variable en `true` en el
+  mismo `@click` que dispara la acción. El botón de confirmar del modal de eliminar
+  paciente (y el de eliminar consulta) usan este mecanismo — es la acción más lenta del
+  sistema y la que más se hace doble clic, así que **siempre** lleva loader, sin excepción.
+
+Dos trampas reales, ya resueltas en `resources/js/button-loader.js` — no las reintroduzcas
+si tocas ese archivo o escribes un loader a mano en vez de usar `<x-button>`:
+
+1. **Deshabilitar el botón de forma síncrona dentro del evento `submit` rompe el
+   `name`/`value`** que el navegador serializa para ese formulario (si algún formulario
+   depende de qué botón se pulsó). El `disabled` real se aplica en un `setTimeout(fn, 0)`,
+   después de que el navegador ya capturó los valores para la petición en curso; el bloqueo
+   de doble clic durante esa ventana brevísima lo cubre un `event.preventDefault()`
+   comprobando el propio atributo de carga del botón.
+2. **El bfcache deja el botón colgado.** Si el usuario vuelve con "atrás", el DOM
+   restaurado conserva el botón deshabilitado y en estado de carga para siempre si no se
+   resetea. `pageshow` siempre lo resetea (se dispara tanto en carga normal como en
+   restauración de bfcache).
+
+No le añadas un loader a cada `wire:click` sin criterio: los `<x-icon-action>` de fila
+(ver/editar/restaurar) y la selección de piezas del odontograma
+(`components/odontogram/tooth.blade.php`, botones de "diente completo"/superficie) son
+acciones de exploración rápida, no de guardado ni destructivas — el odontograma ya atenúa
+el panel completo (`wire:loading.class="opacity-50"` con `wire:target` listando las
+acciones reales de escritura) y eso basta. Sí vale la pena un `wire:loading.attr`/
+`wire:loading.class` ligero (sin spinner, solo atenuar + deshabilitar) en acciones puntuales
+que si mutan datos pero son demasiado pequeñas para `<x-button>` (ej. restaurar un
+expediente archivado desde la tabla de pacientes) — sin cambiar su tamaño de 44×44 ni el
+layout de la fila.
+
 ## Proceso
 
 1. **Contexto** — `git diff` y `git status` para ver qué se está tocando; lee las vistas/componentes afectados completos y sus hermanos para heredar patrones.
@@ -241,5 +344,7 @@ cero — es la fuente de verdad del patrón, no solo un ejemplo.
 - Densidad alta en formularios clínicos largos: es intencional, el personal captura mucho dato por paciente.
 - El item de nav "Configuración del sistema" deshabilitado para roles no-superadmin.
 - `<thead>` con fondo oliva sólido y texto blanco en tablas de datos: es la excepción de marca aprobada por el cliente el 2026-08-28 (ver sección "Patrón de tabla de datos del sistema"), no un descuido a corregir.
+- Un botón `<x-button wire-target="...">` que anuncia su carga con una región `role="status" aria-live="polite"` oculta en vez de un atributo `aria-busy` literal: es la sustitución documentada en "Feedback de carga" §2, necesaria porque Livewire no admite dos `wire:loading.attr` en el mismo elemento — no es un `aria-busy` faltante.
+- Los `wire:click` de selección de pieza/superficie del odontograma sin spinner propio: el panel lateral ya se atenúa entero (`wire:loading.class="opacity-50"`) durante esas acciones — ver "Feedback de carga" §2.
 
 No apruebes un diseño fuera de marca por "moderno", ni bloquees uno sobrio por "aburrido" — la marca Aura es deliberadamente minimalista. Si una decisión de estructura del expediente afecta cumplimiento NOM, no la resuelvas por estética: márcala como "NECESITA CONFIRMACIÓN DEL CLIENTE".

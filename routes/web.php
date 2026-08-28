@@ -38,7 +38,7 @@ Route::middleware('auth')->group(function () {
         ->name('patients.photo');
 
     Route::singleton('patients.medical-history', PatientMedicalHistoryController::class)
-        ->only(['edit', 'update']);
+        ->only(['show', 'edit', 'update']);
 
     Route::get('odontogram', [OdontogramController::class, 'index'])->name('odontogram');
     Route::get('patients/{patient}/odontogram', [OdontogramController::class, 'show'])->name('patients.odontogram');

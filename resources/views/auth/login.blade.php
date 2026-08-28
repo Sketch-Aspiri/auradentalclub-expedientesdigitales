@@ -84,10 +84,9 @@
                 </a>
             </div>
 
-            <button type="submit"
-                    class="w-full rounded bg-aura-olive py-2 text-sm font-medium text-white transition-opacity hover:opacity-90 focus:outline-none focus-visible:ring-2 focus-visible:ring-aura-olive focus-visible:ring-offset-2 motion-reduce:transition-none">
+            <x-button type="submit" variant="primary" class="w-full">
                 Entrar
-            </button>
+            </x-button>
         </form>
     </div>
 

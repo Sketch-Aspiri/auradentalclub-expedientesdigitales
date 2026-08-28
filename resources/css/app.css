@@ -25,6 +25,26 @@
     display: none !important;
 }
 
+/* Puntos de la pantalla de carga (`#nav-loading-overlay`). Se desfasan entre sí para
+   leerse como una secuencia; la regla de `prefers-reduced-motion` de más abajo los
+   congela sin necesidad de una variante aparte. */
+@keyframes aura-dot {
+    0%, 80%, 100% { opacity: 0.25; transform: translateY(0); }
+    40% { opacity: 1; transform: translateY(-3px); }
+}
+
+.aura-dot {
+    animation: aura-dot 1.2s ease-in-out infinite;
+}
+
+.aura-dot:nth-child(2) {
+    animation-delay: 0.15s;
+}
+
+.aura-dot:nth-child(3) {
+    animation-delay: 0.3s;
+}
+
 /* Respeta la preferencia del sistema de movimiento reducido en toda la app (WCAG 2.2). */
 @media (prefers-reduced-motion: reduce) {
     *,

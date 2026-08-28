@@ -4,7 +4,17 @@
 
 {{-- El nombre del paciente no va en el <title> del navegador (historial, pestañas, screen-share): CLAUDE.md §5. --}}
 <x-app-layout title="Consulta">
-    <div class="max-w-3xl">
+    <div
+        class="max-w-3xl"
+        x-data="{
+            confirmDelete: false,
+            deleting: false,
+            closeConfirmDelete() {
+                this.confirmDelete = false;
+                this.$nextTick(() => this.$refs.deleteTrigger?.focus());
+            },
+        }"
+    >
         <div class="flex items-start justify-between mb-6">
             <div>
                 <h1 class="text-lg font-medium">Consulta del {{ $consultation->consultation_date->format('d/m/Y') }}</h1>
@@ -13,18 +23,22 @@
                 </p>
             </div>
 
-            <div class="flex items-center gap-3 text-sm">
+            <div class="flex items-center gap-1" role="group" aria-label="Acciones de la consulta">
                 @can('update', $consultation)
-                    <a href="{{ route('consultations.edit', $consultation) }}" class="text-aura-olive hover:underline">Editar</a>
+                    <x-icon-action :href="route('consultations.edit', $consultation)" label="Editar consulta">
+                        <x-icon name="pencil" />
+                    </x-icon-action>
                 @endcan
 
                 @can('delete', $consultation)
-                    <form method="POST" action="{{ route('consultations.destroy', $consultation) }}"
-                          onsubmit="return confirm('¿Eliminar esta consulta? Quedará archivada y se podrá restaurar desde la lista de consultas del paciente.');">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="text-red-600 hover:underline">Eliminar</button>
-                    </form>
+                    <x-icon-action
+                        label="Eliminar consulta"
+                        tone="danger"
+                        x-ref="deleteTrigger"
+                        @click="confirmDelete = true"
+                    >
+                        <x-icon name="trash" />
+                    </x-icon-action>
                 @endcan
             </div>
         </div>
@@ -89,5 +103,39 @@
         <a href="{{ route('patients.consultations.index', $patient) }}" class="inline-block mt-6 text-sm text-aura-gray hover:text-aura-gray-dark">
             &larr; Volver al historial de consultas
         </a>
+
+        {{-- Confirmación de eliminación: modal propio de la UI, nunca confirm() del navegador
+             (antes usaba onsubmit="return confirm(...)" — corregido: viola la regla dura de
+             CLAUDE.md §5 / .claude/agents/ux-ui-designer.md). Mismo patrón que patients/show.blade.php. --}}
+        @can('delete', $consultation)
+            <form method="POST" action="{{ route('consultations.destroy', $consultation) }}" x-ref="deleteForm" class="hidden">
+                @csrf
+                @method('DELETE')
+            </form>
+
+            <x-confirm-modal show="confirmDelete" title-id="delete-consultation-title" on-close="closeConfirmDelete()">
+                <h2 id="delete-consultation-title" class="text-base font-medium text-aura-gray-dark">
+                    Eliminar consulta
+                </h2>
+                <p class="mt-2 text-sm text-aura-gray">
+                    Se eliminará la consulta del
+                    <span class="font-medium text-aura-gray-dark">{{ $consultation->consultation_date->format('d/m/Y') }}</span>.
+                    Quedará archivada y se podrá restaurar desde la lista de consultas del paciente.
+                </p>
+                <div class="mt-5 flex justify-end gap-2">
+                    <x-button type="button" variant="secondary" x-ref="confirmModalCancel"
+                              @click="closeConfirmDelete()"
+                              @keydown.tab.prevent="$refs.confirmModalConfirm.focus()">
+                        Cancelar
+                    </x-button>
+                    <x-button type="button" variant="danger" x-ref="confirmModalConfirm"
+                              alpine-loading="deleting" loading-text="Eliminando…"
+                              @click="deleting = true; $refs.deleteForm.requestSubmit()"
+                              @keydown.tab.prevent="$refs.confirmModalCancel.focus()">
+                        Eliminar
+                    </x-button>
+                </div>
+            </x-confirm-modal>
+        @endcan
     </div>
 </x-app-layout>

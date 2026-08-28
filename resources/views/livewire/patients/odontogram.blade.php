@@ -199,11 +199,9 @@
                             @enderror
                         </div>
 
-                        <button type="submit" wire:target="save" wire:loading.attr="disabled"
-                                class="w-full rounded-md bg-aura-olive px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-aura-olive/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-aura-olive focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-70">
-                            <span wire:loading.remove wire:target="save">Registrar hallazgo</span>
-                            <span wire:loading wire:target="save">Registrando…</span>
-                        </button>
+                        <x-button type="submit" variant="primary" wire-target="save" loading-text="Registrando…" class="w-full">
+                            Registrar hallazgo
+                        </x-button>
                     </form>
 
                     {{-- Estado vigente de la pieza --}}
