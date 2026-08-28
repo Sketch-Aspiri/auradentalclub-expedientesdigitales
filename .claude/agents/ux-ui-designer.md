@@ -85,6 +85,111 @@ Si una skill entrega guía que choca con `CLAUDE.md` §7 o con las reglas duras 
 - Responsive real: el shell colapsa el sidebar en `< md`. Cualquier vista nueva debe funcionar en tablet (uso frecuente en el consultorio) y no romper en móvil.
 - Considera la impresión: el expediente a veces se imprime. Si la vista es candidata a imprimirse (consulta, consentimiento, historia clínica), no rompas con estilos `@media print` hostiles y evita depender solo de color para transmitir información.
 
+## Patrón de tabla de datos del sistema (norma para toda tabla futura)
+
+Aprobado por el cliente el 2026-08-28. Implementación de referencia a copiar:
+`resources/views/livewire/patients/patient-list.blade.php`. Toda tabla nueva (consultas,
+odontograma, consentimientos, hoja de evolución, archivos) sigue esta estructura — no la
+reinventes por pantalla.
+
+### 1. Estructura completa
+
+```html
+<div class="overflow-hidden rounded-lg border border-aura-gray-light bg-white">
+    <div class="hidden lg:block">
+        <table class="w-full text-sm">
+            <caption class="sr-only">Descripción de la tabla para lector de pantalla</caption>
+            <thead class="bg-aura-olive text-xs uppercase tracking-wide text-white">
+                <tr>
+                    <th scope="col" class="px-3 py-3 text-left font-medium">Columna</th>
+                    <th scope="col" class="px-3 py-3 text-right font-medium"><span class="sr-only">Acciones</span></th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-aura-gray-light">
+                <tr class="transition-colors motion-reduce:transition-none hover:bg-aura-cream/60">
+                    <td class="px-3 py-3 text-aura-gray-dark">…</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <ul role="list" class="divide-y divide-aura-gray-light lg:hidden">
+        {{-- misma data, una tarjeta por fila --}}
+    </ul>
+</div>
+```
+
+`overflow-hidden` en la tarjeta contenedora sirve **solo** para recortar las esquinas
+redondeadas (`rounded-lg`) — nunca lo confundas con `overflow-x-auto`.
+
+### 2. Excepción de marca: encabezado oliva sólido
+
+`<thead class="bg-aura-olive text-xs uppercase tracking-wide text-white">` — fondo oliva
+sólido (`#3E5419`) con texto blanco, contraste ≈ 8.9:1 (AA sobrado).
+
+Esto es una **excepción de marca aprobada explícitamente por el cliente el 2026-08-28**,
+frente a la regla general de `CLAUDE.md` §7 ("el oliva nunca como fondo extenso"). La
+excepción aplica **únicamente** a encabezados (`<thead>`) de tablas de datos — no a
+tarjetas, secciones, banners, ni ningún otro contenedor. **No "corregir" este patrón
+hacia un acento sutil en futuras revisiones** creyendo que viola la regla de marca: es
+una decisión de producto ya tomada y confirmada, no un descuido. El resto de la interfaz
+sigue la regla general sin excepción.
+
+### 3. Prohibición de scroll en tablas
+
+El cliente rechazó explícitamente la barra de scroll horizontal en tablas. Por tanto:
+
+- Nunca `overflow-x-auto` ni ningún contenedor con scroll horizontal alrededor de una `<table>`.
+- El responsive se resuelve recortando a una lista de tarjetas apiladas (`<ul role="list">`)
+  por debajo de `lg` (`hidden lg:block` en la tabla, `lg:hidden` en la lista de tarjetas).
+- Columnas secundarias (no críticas para escanear de un vistazo) se reservan para `xl` con
+  `hidden px-3 py-3 ... xl:table-cell` en vez de forzarlas a apretarse en `lg` o generar
+  overflow. Si una tabla tiene pocas columnas y todas caben cómodas en `lg`, no reserves
+  ninguna solo por costumbre — evalúa caso por caso.
+
+### 4. Acciones
+
+- Acciones de fila (ver, editar, restaurar, eliminar) → `<x-icon-action>` **solo-icono**,
+  con `label` que da el nombre accesible (tooltip + `aria-label` + `title`).
+- Acciones secundarias de la pantalla (ej. alternar "ver archivados") → también solo-icono
+  vía `<x-icon-action>`.
+- La **acción primaria de la pantalla** (ej. "Nuevo paciente", "Nueva consulta") → icono +
+  **texto**, nunca solo-icono: en una tabla con varios iconos de fila, un botón "+" aislado
+  perdería prominencia y el personal debe reconocer de un vistazo dónde dar de alta un
+  registro nuevo.
+- Acciones destructivas (eliminar) sobre datos clínicos → modal de confirmación explícito
+  (`<x-confirm-modal>`), nunca el `<x-icon-action>` de eliminar disparando el borrado directo.
+
+### 5. Accesibilidad obligatoria
+
+- `<th scope="col">` en cada encabezado de columna; nunca una tabla layout-only.
+- `<caption class="sr-only">` describiendo qué lista la tabla (ej. "Listado de pacientes activos").
+- `<span class="sr-only">Acciones</span>` (u otro texto descriptivo) en encabezados sin
+  texto visible (columna de avatar, columna de acciones).
+- `aria-label` de cada `<x-icon-action>` de fila debe identificar la fila **sin exponer PHI**:
+  usa el nombre del paciente (dato de identificación, no clínico) cuando la fila es un
+  paciente, o la **fecha/folio** cuando la fila es un registro clínico (consulta,
+  consentimiento, evolución). **Nunca** diagnóstico, alergias, notas clínicas, ni ningún
+  campo de texto libre clínico en un `aria-label` o `title` — son atributos planos que
+  pueden quedar expuestos fuera del flujo normal de lectura (inspección DOM, capturas).
+- Texto clínico libre que pueda ser largo (diagnóstico, notas) se recorta solo
+  **visualmente** con `truncate` + un ancho máximo (`max-w-xs` u otro), nunca con
+  `Str::limit` del lado servidor si eso pierde el dato en pantallas más anchas, y nunca
+  exponiendo el texto completo en un `title` — el dato completo vive en la página de
+  detalle, no en un tooltip.
+
+### 6. Estado vacío
+
+Dentro de la misma tarjeta contenedora (no un componente aparte), centrado
+(`px-4 py-12 text-center`), con un mensaje específico al contexto (ej. "Este paciente aún
+no tiene consultas registradas.") y, cuando aplique, la acción primaria como salida
+("Registrar la primera consulta").
+
+### 7. Referencia
+
+Antes de construir una tabla nueva, abre `patient-list.blade.php` y copia su estructura
+literal (clases, orden de elementos, comentarios de decisión) en vez de recrearla desde
+cero — es la fuente de verdad del patrón, no solo un ejemplo.
+
 ## Proceso
 
 1. **Contexto** — `git diff` y `git status` para ver qué se está tocando; lee las vistas/componentes afectados completos y sus hermanos para heredar patrones.
@@ -135,5 +240,6 @@ Si una skill entrega guía que choca con `CLAUDE.md` §7 o con las reglas duras 
 - `Instrument Sans` en lugar de las fuentes del manual (decisión ya tomada por falta de licencia web — ver `CLAUDE.md` §7).
 - Densidad alta en formularios clínicos largos: es intencional, el personal captura mucho dato por paciente.
 - El item de nav "Configuración del sistema" deshabilitado para roles no-superadmin.
+- `<thead>` con fondo oliva sólido y texto blanco en tablas de datos: es la excepción de marca aprobada por el cliente el 2026-08-28 (ver sección "Patrón de tabla de datos del sistema"), no un descuido a corregir.
 
 No apruebes un diseño fuera de marca por "moderno", ni bloquees uno sobrio por "aburrido" — la marca Aura es deliberadamente minimalista. Si una decisión de estructura del expediente afecta cumplimiento NOM, no la resuelvas por estética: márcala como "NECESITA CONFIRMACIÓN DEL CLIENTE".

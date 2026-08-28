@@ -8,7 +8,8 @@
     };
 @endphp
 
-<x-app-layout :title="'Historia clínica — '.$patient->full_name">
+{{-- El nombre del paciente no va en el <title> del navegador (historial, pestañas, screen-share): CLAUDE.md §5. --}}
+<x-app-layout title="Historia clínica">
     <div class="max-w-3xl">
         <h1 class="text-lg font-medium mb-1">Historia clínica</h1>
         <p class="text-sm text-aura-gray mb-6">{{ $patient->full_name }}</p>

@@ -2,7 +2,8 @@
     $field = fn (?string $value) => filled($value) ? $value : '—';
 @endphp
 
-<x-app-layout :title="'Consulta '.$consultation->consultation_date->format('d/m/Y').' — '.$patient->full_name">
+{{-- El nombre del paciente no va en el <title> del navegador (historial, pestañas, screen-share): CLAUDE.md §5. --}}
+<x-app-layout title="Consulta">
     <div class="max-w-3xl">
         <div class="flex items-start justify-between mb-6">
             <div>

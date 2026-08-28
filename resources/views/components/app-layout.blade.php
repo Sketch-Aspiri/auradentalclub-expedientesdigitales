@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" class="scroll-pt-16 md:scroll-pt-20">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -7,6 +7,10 @@
     <link rel="icon" type="image/png" href="{{ asset('logos/monograma.png') }}">
     <link rel="apple-touch-icon" href="{{ asset('logos/monograma.png') }}">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    {{-- Fuerza la carga de Alpine.js (viene empaquetado con Livewire) en toda vista de este
+         shell, incluso en páginas sin un componente Livewire — Livewire solo inyecta sus
+         assets automáticamente si detecta un componente renderizado en la misma petición. --}}
+    @livewireStyles
 </head>
 <body class="bg-aura-cream text-aura-gray-dark font-sans antialiased min-h-screen">
     {{-- Encabezado móvil con menú desplegable (sin navegación en escritorio) --}}
@@ -39,9 +43,16 @@
     </header>
 
     <div class="md:flex md:min-h-screen">
-        {{-- Barra lateral de escritorio --}}
-        <aside class="hidden md:flex md:w-64 md:shrink-0 md:flex-col md:justify-between md:border-r md:border-aura-gray-light md:bg-white md:px-6 md:py-8">
-            <div>
+        {{-- Barra lateral de escritorio: alto fijo al viewport y anclada en su lugar (sticky),
+             para que con scroll 0 siempre se vea completa (logo, navegación y bloque de usuario
+             al pie), sin importar qué tan larga sea la página. Si la navegación llegara a superar
+             el alto disponible, solo esa zona hace scroll interno; el bloque de usuario nunca se
+             mueve. Se eligió `sticky` (no `fixed`) porque sigue participando en el flujo normal
+             del `md:flex` existente: no requiere reservar margen/padding manual en la columna de
+             contenido ni recalcular anchos, así que es el cambio menos invasivo sobre el layout
+             actual. `self-start` evita que el flex `stretch` por defecto infle su altura. --}}
+        <aside class="hidden md:sticky md:top-0 md:flex md:h-screen md:w-64 md:shrink-0 md:flex-col md:self-start md:border-r md:border-aura-gray-light md:bg-white">
+            <div class="min-h-0 flex-1 overflow-y-auto px-6 pt-8">
                 <a href="{{ route('dashboard') }}"
                    class="mb-10 block w-fit rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-aura-olive">
                     <img src="{{ asset('logos/logo_completo.png') }}" alt="aura dental club"
@@ -53,14 +64,18 @@
                 </nav>
             </div>
 
-            <div class="border-t border-aura-gray-light pt-4">
+            <div class="shrink-0 border-t border-aura-gray-light px-6 py-4">
                 <x-user-menu />
             </div>
         </aside>
 
         <div class="flex min-w-0 flex-1 flex-col">
-            {{-- Barra superior de escritorio: identidad de la cuenta con menú --}}
-            <header class="hidden border-b border-aura-gray-light bg-white px-6 py-3 md:block md:px-12">
+            {{-- Barra superior de escritorio: fija al hacer scroll (sticky, fondo sólido para que
+                 el contenido no se transparente por debajo). z-20: por encima del contenido de
+                 `<main>`, pero por debajo del panel del menú de usuario (z-40, definido en
+                 `x-user-dropdown`) y de cualquier modal de confirmación (usar z-50+). No compite
+                 con el encabezado móvil (z-30): son mutuamente excluyentes vía `md:block`/`md:hidden`. --}}
+            <header class="hidden border-b border-aura-gray-light bg-white px-6 py-3 md:sticky md:top-0 md:z-20 md:block md:px-12">
                 <div class="mx-auto flex max-w-5xl items-center justify-end">
                     <x-user-dropdown />
                 </div>
@@ -103,5 +118,6 @@
             });
         })();
     </script>
+    @livewireScripts
 </body>
 </html>
